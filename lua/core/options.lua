@@ -82,7 +82,9 @@ opt.titlestring = "%{getcwd()}"
 opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 opt.fillchars = { foldopen = "", foldclose = "", fold = " ", foldsep = " ", diff = "╱", eob = " " }
 
-
+-- Buffer Behaviour
+opt.switchbuf = "usetab"
+opt.virtualedit = "block"
 -- Ensure I dont freak out by hitting the cap w when exiting
 vim.cmd [[
   cnoreabbrev Wq wq
@@ -91,3 +93,7 @@ vim.cmd [[
   cnoreabbrev W w
   cnoreabbrev Q q
 ]]
+
+
+
+
