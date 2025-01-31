@@ -1,9 +1,9 @@
 local function map(mode, lhs, rhs, opts)
-  local options = { noremap = true, silent = true }
-  if opts then
-    options = vim.tbl_extend("force", options, opts)
-  end
-  vim.keymap.set(mode, lhs, rhs, options)
+	local options = { noremap = true, silent = true }
+	if opts then
+		options = vim.tbl_extend("force", options, opts)
+	end
+	vim.keymap.set(mode, lhs, rhs, options)
 end
 
 -- Turn off arrow keys - force HJKL
@@ -29,8 +29,8 @@ map("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
 -- Select All
 map("n", "<C-a>", "ggVG", { desc = "Slect all" })
 
-map("n", "<leader>vs", "<cmd>vsplit<cr>", { desc = "Vertical Split"})
-map("n", "<leader>hs", "<cmd>split<cr>", { desc = "Horizontal Split"})
+map("n", "<leader>vs", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
+map("n", "<leader>hs", "<cmd>split<cr>", { desc = "Horizontal Split" })
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -56,5 +56,3 @@ map({ "n", "v" }, "<leader>p", '"+p', { desc = "paste from system clipboard" })
 map("n", "<leader>q", "<cmd>q!<cr>", { desc = "close buffer/window" })
 map("n", "<s-l>", "<cmd>bnext<cr>", { desc = "go to next buffer" })
 map("n", "<s-h>", "<cmd>bprevious<cr>", { desc = "go to previous buffer" })
-
-
