@@ -1,6 +1,12 @@
 return {
   misc = {
     dots = "󰇘",
+    folder = '',
+    folder_outline = '',
+    file = '',
+    file2 = '',
+    file_outline = '󰧮',
+    search = '',
   },
   ft = {
     octo = "",
