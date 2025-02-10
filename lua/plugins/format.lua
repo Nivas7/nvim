@@ -14,6 +14,7 @@ return {
 			markdown = { "prettier" },
 			yaml = { "prettier" },
 			graphql = { "prettier" },
+			json = { "prettier" },
 			vue = { "prettier" },
 			angular = { "prettier" },
 			less = { "prettier" },

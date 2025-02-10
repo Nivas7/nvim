@@ -1,45 +1,29 @@
+-- NOTE: Marks
 return {
-	'rose-pine/neovim',
-	name = 'rose-pine',
-	priority = 1000,
-	opts = {
-		dark_variant = 'moon',
-		styles = { italic = false },
-		palette = {
-			dawn = {
-				no_bg = '#faf4ed',
-				cursor_bg = '#000000',
-				cursor_fg = '#ffffff',
-			},
-			moon = {
-				gold = '#f6d5a7',
-				foam = '#a1d1da',
-				iris = '#d9c7ef',
-				rose = '#ebbcba',
-				pine = '#437e91',
-				no_bg = '#000000',
-				cursor_bg = '#ffffff',
-				cursor_fg = '#000000',
-			},
-		},
-		highlight_groups = {
-			Normal = { bg = 'no_bg' },
-			Cursor = { bg = 'cursor_bg', fg = 'cursor_fg' },
-			Directory = { fg = 'foam', bold = false },
-			StatusLine = { bg = 'surface', fg = 'subtle' },
-			StatusLineTerm = { link = 'StatusLine' },
-			StatusLineNC = { link = 'StatusLine' },
-			--- gitsigns
-			StatusLineGitSignsAdd = { bg = 'surface', fg = 'pine' },
-			StatusLineGitSignsChange = { bg = 'surface', fg = 'gold' },
-			StatusLineGitSignsDelete = { bg = 'surface', fg = 'rose' },
-			--- diagnostics
-			StatusLineDiagnosticSignError = { bg = 'surface', fg = 'love' },
-			StatusLineDiagnosticSignWarn = { bg = 'surface', fg = 'gold' },
-			StatusLineDiagnosticSignInfo = { bg = 'surface', fg = 'foam' },
-			StatusLineDiagnosticSignHint = { bg = 'surface', fg = 'iris' },
-			StatusLineDiagnosticSignOk = { bg = 'surface', fg = 'pine' },
-		},
+	"ThePrimeagen/harpoon",
+	dependencies = {
+		"nvim-lua/plenary.nvim",
 	},
+	init = function()
+		vim.keymap.set("n", "<leader>ha", function()
+			require("harpoon"):list():add()
+			vim.notify("   Marked file", vim.log.levels.INFO, { title = "Harpoon" })
+		end, { desc = "Harpoon | Add Mark" })
+
+		vim.keymap.set("n", "<leader>hh", function()
+			require("harpoon").ui:toggle_quick_menu(require("harpoon"):list())
+		end, { desc = "Harpoon | Menu" })
+
+		-- Uncomment below to enable navigation keymaps
+		vim.keymap.set("n", "<leader>hn", function()
+			require("harpoon"):list():next()
+		end, { desc = "Harpoon | Next" })
+
+		vim.keymap.set("n", "<leader>hp", function()
+			require("harpoon"):list():prev()
+		end, { desc = "Harpoon | Previous" })
+	end,
+	branch = "harpoon2",
+	opts = {},
 }
 
