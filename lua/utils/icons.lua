@@ -6,11 +6,13 @@ return {
     file = '',
     file2 = '',
     file_outline = '󰧮',
+    vertical_bar = "│",
+    Ghost = "󰊠",
+    bug = '',
+    git = '',
     search = '',
   },
-  ft = {
-    octo = "",
-  },
+
   dap = {
     Stopped = { "󰁕 ", "DiagnosticWarn", "DapStoppedLine" },
     Breakpoint = " ",
