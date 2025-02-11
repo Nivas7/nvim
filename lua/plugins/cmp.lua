@@ -27,18 +27,20 @@ return {
 				completeopt = "menu,menuone,noinsert,noselect",
 			},
 			mapping = {
-				["<CR>"] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Insert }),
-				["<C-e>"] = cmp.mapping.abort(),
-				["<C-u>"] = cmp.mapping.scroll_docs(-4),
-				["<C-d>"] = cmp.mapping.scroll_docs(4),
-				["<Up>"] = cmp.mapping.select_prev_item(cmp_select_opts),
-				["<Down>"] = cmp.mapping.select_next_item(cmp_select_opts),
-				["<C-p>"] = cmp.mapping.select_prev_item(cmp_select_opts),
-				["<C-n>"] = cmp.mapping.select_next_item(cmp_select_opts),
-				["<C-y>"] = cmp.mapping.complete(),
+				["<Tab>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+				["<S-Tab>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+				["<C-k>"] = cmp.mapping.scroll_docs(-4),
+				["<C-j>"] = cmp.mapping.scroll_docs(4),
+				["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
+				["<C-e>"] = cmp.mapping.abort(), -- close completion window
+				["<Esc>"] = cmp.mapping.close(),
+				["<CR>"] = cmp.mapping.confirm({
+					behavior = cmp.ConfirmBehavior.Insert,
+					select = true,
+				}),
 			},
 			sources = cmp.config.sources({
-				{ name = "lazydev",  group_index = 0 },
+				{ name = "lazydev", group_index = 0 },
 				{ name = "nvim_lsp", keyword_length = 2 },
 				{
 					name = "snippets",

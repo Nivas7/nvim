@@ -21,7 +21,7 @@ return {
 				css = false,
 				css_fn = false,
 				mode = "background",
-				tailwind = false,
+				tailwind = true,
 				virtualtext = "■",
 			},
 			buftypes = {
