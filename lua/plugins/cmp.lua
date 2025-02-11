@@ -56,9 +56,12 @@ return {
 				{ name = "path" },
 			}),
 			formatting = {
-				format = lspkind.cmp_format({
-					mode = "symbol_text",
-				}),
+				format = function(entry, item)
+					lspkind.cmp_format({
+						mode = "symbol_text",
+					})(entry, item) -- add icons
+					return require("tailwindcss-colorizer-cmp").formatter(entry, item)
+				end,
 				fields = { "abbr", "kind" }, -- Remove 'menu' to avoid truncation
 			},
 		})

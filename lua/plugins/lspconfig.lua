@@ -2,9 +2,7 @@ return {
     "neovim/nvim-lspconfig",
     lazy = true,
     event = { "BufReadPost", "BufNewFile" },
-    -- dependencies = {
-    --   "hrsh7th/cmp-nvim-lsp",
-    -- },
+    dependencies = { 'saghen/blink.cmp' },
     config = function()
         -- import lspconfig plugin
         local lspconfig = require("lspconfig")
