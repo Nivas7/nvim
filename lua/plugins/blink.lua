@@ -3,6 +3,9 @@ return {
 	version = "*",
 	event = "InsertEnter",
 	enabled = not vim.g.cmp_enable,
+	dependencies = {
+		{ "roobert/tailwindcss-colorizer-cmp.nvim", config = true },
+	},
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
@@ -69,7 +72,7 @@ return {
 				draw = {
 					treesitter = { "lsp" },
 					columns = {
-						{ "label", gap = 2 },
+						{ "label",     gap = 2 },
 						{ "kind_icon", gap = 1, "kind" },
 					},
 				},

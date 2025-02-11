@@ -7,6 +7,10 @@ _G.Utils = require("utils")
 
 -- https://github.com/neovim/neovim/issues/31675
 vim.hl = vim.highlight
+-- Global variables.
+vim.g.projects_dir = vim.env.HOME .. '/dev/'
+vim.g.personal_projects_dir = vim.g.projects_dir .. '/dev/Persona'
+vim.g.work_projects_dir = vim.env.HOME .. '/Project'
 
 require("core")
 

@@ -9,6 +9,7 @@ return {
 		"hrsh7th/cmp-cmdline",
 		"hrsh7th/cmp-emoji",
 		"garymjr/nvim-snippets",
+		{ "roobert/tailwindcss-colorizer-cmp.nvim", config = true },
 	},
 	config = function()
 		local cmp = require("cmp")
@@ -79,4 +80,3 @@ return {
 		})
 	end,
 }
-
