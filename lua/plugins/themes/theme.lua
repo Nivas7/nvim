@@ -44,7 +44,7 @@ return {
 					-- type = "#dcaed7",
 				},
 			})
-			vim.api.nvim_command("colorscheme base16-black-metal-gorgoroth")
+			-- vim.api.nvim_command("colorscheme base16-black-metal-gorgoroth")
 		end,
 	},
 	{
