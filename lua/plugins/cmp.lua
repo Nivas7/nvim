@@ -18,7 +18,6 @@ return {
 		local cmp = require("cmp")
 		local lspkind = require("lspkind")
 		local luasnip = require("luasnip")
-		local cmp_select_opts = { behavior = cmp.SelectBehavior.Insert }
 
 		cmp.setup({
 			snippet = {
@@ -91,8 +90,15 @@ return {
 			}),
 		})
 
-		require("utils.snippets")
+		local Path = require("plenary.path")
 
+		local snippet_dir = Path:new("utils/snippets")
+		if snippet_dir:exists() and snippet_dir:is_dir() then
+			for _, file_path in ipairs(snippet_dir:children()) do
+				local file_name = file_path:make_relative("utils/snippets"):gsub("%.lua$", "")
+				require("utils.snippets." .. file_name)
+			end
+		end
 		luasnip.filetype_extend("javascriptreact", { "javascript" })
 		luasnip.filetype_extend("typescriptreact", { "typescript" })
 

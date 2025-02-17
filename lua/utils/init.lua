@@ -4,6 +4,7 @@ local M = {
 	fzf = require("utils.fzf"),
 	lsp = require("utils.lsp"),
 	redir = require("utils.redir"),
+	neovide_ui = require("utils.neovide"),
 }
 
 -- Merge two tables
