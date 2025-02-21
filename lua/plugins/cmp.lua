@@ -1,11 +1,12 @@
 return {
 	"hrsh7th/nvim-cmp",
 	event = "VeryLazy",
-	enabled = vim.g.cmp_enable,
+	enabled = true,
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-path",
 		"hrsh7th/cmp-cmdline",
+		"onsails/lspkind.nvim",
 		{
 			"L3MON4D3/LuaSnip",
 			version = "v2.*",

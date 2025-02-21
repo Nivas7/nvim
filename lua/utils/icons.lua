@@ -1,16 +1,21 @@
 return {
   misc = {
     dots = "󰇘",
-    folder = '',
-    folder_outline = '',
-    file = '',
-    file2 = '',
-    file_outline = '󰧮',
+    folder = "",
+    folder_outline = "",
+    file = "",
+    file2 = "",
+    file_outline = "󰧮",
     vertical_bar = "│",
     Ghost = "󰊠",
-    bug = '',
-    git = '',
-    search = '',
+    bug = "",
+    git = "",
+    search = "",
+  },
+
+  fold = {
+    open = "",
+    closed = "",
   },
 
   dap = {
