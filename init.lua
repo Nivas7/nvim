@@ -13,22 +13,10 @@ vim.g.personal_projects_dir = vim.g.projects_dir .. "/dev/Persona"
 vim.g.work_projects_dir = vim.env.HOME .. "/Project"
 
 -- if nvim was opened w/o argument, re-open the first oldfile that exist
-vim.defer_fn(function()
-	if vim.fn.argc() > 0 then
-		return
-	end
-	for _, file in ipairs(vim.v.oldfiles) do
-		if vim.uv.fs_stat(file) and vim.fs.basename(file) ~= "COMMIT_EDITMSG" then
-			vim.cmd.edit(file)
-			return
-		end
-	end
-end, 1)
-
 require("core")
 
 vim.filetype.add({
-	extension = {
-		http = "http",
-	},
+  extension = {
+    http = "http",
+  },
 })
