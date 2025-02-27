@@ -1,6 +1,8 @@
+local M = {}
+
 --@module Snacks
 -- Open tmux sidebar and run the npm scripts
-local function get_npm_scripts()
+function M.get_npm_scripts()
   local file = io.open("package.json", "r")
   if file then
     local content = file:read("*a")
@@ -22,8 +24,8 @@ local function get_npm_scripts()
 end
 
 -- Open custom picker
-function RunNpmInSidebar()
-  local scripts = get_npm_scripts()
+function M.RunNpmInSidebar()
+  local scripts = M.get_npm_scripts()
   -- if scripts is a string then print it and exit
   if type(scripts) == "string" then
     print(scripts)
@@ -75,8 +77,20 @@ function RunNpmInSidebar()
   })
 end
 
-vim.keymap.set("n", "<leader>sns", function()
-  RunNpmInSidebar()
-end, { silent = true, desc = "[S]plit [N]ew [S]idebar" })
+---sets `buffer`, `silent` and `nowait` to true
+---@param mode string|string[]
+---@param lhs string
+---@param rhs string|function
+---@param opts? {desc?: string, unique?: boolean, buffer?: number|boolean, remap?: boolean, silent?:boolean, nowait?: boolean}
+function M.bufKeymap(mode, lhs, rhs, opts)
+  opts = vim.tbl_extend("force", { buffer = true, silent = true, nowait = true }, opts or {})
+  vim.keymap.set(mode, lhs, rhs, opts)
+end
 
-print("loaded functions")
+---@param text string
+---@param replace string
+function M.bufAbbrev(text, replace)
+  vim.keymap.set("ia", text, replace, { buffer = true })
+end
+
+return M

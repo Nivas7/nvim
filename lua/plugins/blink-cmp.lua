@@ -21,9 +21,6 @@ return {
     cmdline = {
       keymap = {
         preset = "enter",
-
-        -- OPTIONAL: sets <CR> to accept the item and run the command immediately
-        -- use `select_accept_and_enter` to accept the item or the first item if none are selected
         ["<CR>"] = { "accept_and_enter", "fallback" },
       },
     },

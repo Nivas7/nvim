@@ -10,6 +10,6 @@ return {
       treesitter_context_bg = false,
       float_borderless = false,
     })
-    vim.cmd.colorscheme("cold")
+    -- vim.cmd.colorscheme("cold")
   end,
 }
