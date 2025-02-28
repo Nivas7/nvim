@@ -32,7 +32,6 @@ require("lazy").setup({
     enabled = true,
     notify = false,
   },
-  { import = "plugins.snacks" },
   ui = {
     icons = {
       ft = "",
