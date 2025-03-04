@@ -6,7 +6,6 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     "hrsh7th/cmp-nvim-lsp",
     "neovim/nvim-lspconfig",
-    -- "saghen/blink.cmp",
   },
   config = function()
     -- import mason and mason_lspconfig
