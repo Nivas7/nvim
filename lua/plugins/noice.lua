@@ -19,9 +19,6 @@ vim.api.nvim_create_autocmd("FileType", {
 return {
   "folke/noice.nvim",
   event = "BufReadPre",
-  keys = {
-    { "<Esc>", vim.cmd.NoiceDismiss, desc = "󰎟 Clear notifications" },
-  },
   opts = {
     routes = {
       -- DOCS https://github.com/folke/noice.nvim#-routes

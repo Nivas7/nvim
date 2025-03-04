@@ -121,27 +121,22 @@ return {
       dashboard = {
         enabled = true,
         preset = {
-          header = header,
-        },
-        formats = {
-          header = {
-            "%s",
-            align = "center",
+          keys = {
+            { key = "n", desc = "New File", action = ":ene | startinsert" },
+            { key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+            { key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+            { key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+            { key = "s", desc = "Restore Session", section = "session" },
+            { key = "q", desc = "Quit", action = ":qa" },
           },
+          header = " ⚡ Neovim",
         },
-        sections = {
-          {
-            section = "header",
-            padding = 4,
-          },
-          {
-            pane = 2,
-            {
-              { section = "keys", gap = 1, padding = 2 },
-              { section = "startup" },
-            },
-          },
-        },
+      },
+      formats = { header = { "%s", align = "center" } },
+      sections = {
+        { section = "header" },
+        { section = "keys", gap = 1, padding = 1 },
+        { section = "startup" },
       },
     },
     -- NOTE: Keymaps
@@ -161,7 +156,7 @@ return {
         desc = "Lazygit Logs",
       },
       {
-        "<leader>es",
+        "<leader>ee",
         function()
           require("snacks").explorer()
         end,
