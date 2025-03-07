@@ -26,12 +26,7 @@ return {
     lazy = false,
     -- NOTE: Options
     opts = {
-      explorer = {
-        enabled = true,
-        layout = {
-          cycle = false,
-        },
-      },
+      explorer = { enabled = true, layout = { cycle = false } },
       quickfile = {
         enabled = true,
         exclude = { "latex" },

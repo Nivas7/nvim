@@ -1,6 +1,4 @@
 local opt = vim.opt
-local g = vim.g
-local icons = require("utils.icons")
 
 -- Set <space> as the leader key
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -96,8 +94,8 @@ vim.opt.listchars = {
 vim.opt.fillchars = {
   eob = " ",
   diff = "╱",
-  foldopen = icons.fold.open,
-  foldclose = icons.fold.closed,
+  foldopen = "",
+  foldclose = "",
   foldsep = " ",
 }
 
