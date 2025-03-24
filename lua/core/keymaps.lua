@@ -1,9 +1,9 @@
 local function map(mode, lhs, rhs, opts)
-	local options = { noremap = true, silent = true }
-	if opts then
-		options = vim.tbl_extend("force", options, opts)
-	end
-	vim.keymap.set(mode, lhs, rhs, options)
+  local options = { noremap = true, silent = true }
+  if opts then
+    options = vim.tbl_extend("force", options, opts)
+  end
+  vim.keymap.set(mode, lhs, rhs, options)
 end
 
 -- Turn off arrow keys - force HJKL
@@ -21,6 +21,13 @@ map("v", "p", '"_dP')
 
 -- Remove highlighting
 map("n", "<leader>nh", ":nohl<CR>")
+
+map("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
+
+map("n", "<C-k>", "<cmd>cnext<CR>zz")
+map("n", "<C-j>", "<cmd>cprev<CR>zz")
+map("n", "<leader>k", "<cmd>lnext<CR>zz")
+map("n", "<leader>j", "<cmd>lprev<CR>zz")
 
 -- Better line navigation
 map("n", "j", "v:count == 0 ? 'gj' :  'j'", { expr = true })
