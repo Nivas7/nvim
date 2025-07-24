@@ -1,4 +1,5 @@
 vim.opt.mouse = ""
+vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.tabstop = 4
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor100"

@@ -1,9 +1,64 @@
 return {
+	-- Base16 theme configuration in pure Lua
+	{
+		"tinted-theming/tinted-vim",
+		lazy = false,
+		priority = 1000,
+		init = function()
+			-- Enable true color
+			vim.opt.termguicolors = true
+
+			-- Enable italics support for 'one' theme
+			vim.g.one_allow_italics = 1
+
+			-- Clear background from specific highlight groups
+			local clear_bg_groups = {
+				"LineNr",
+				"SignColumn",
+				"EndOfBuffer",
+				"DiagnosticFloatingError",
+				"DiagnosticFloatingWarn",
+				"DiagnosticFloatingInfo",
+				"DiagnosticFloatingHint",
+				"DiagnosticFloatingOk",
+			}
+
+			for _, group in ipairs(clear_bg_groups) do
+				vim.api.nvim_set_hl(0, group, { bg = "NONE" })
+			end
+
+			-- Link FloatBorder and NormalFloat to other groups
+			vim.api.nvim_set_hl(0, "FloatBorder", { link = "LineNr" })
+			vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" }) -- fallback to Normal if Float doesn't exist
+
+			-- Highlight customization function
+			local function tinted_customize()
+				local gui08 = vim.g.tinted_gui08 or "#FF5F5F" -- Fallback if unset
+				local cterm08 = vim.g.tinted_cterm08 or 1
+
+				vim.api.nvim_set_hl(0, "@variable.member", {
+					fg = "#acc142",
+					ctermfg = 2,
+				})
+			end
+
+			-- Run it on startup
+			tinted_customize()
+
+			-- Re-apply highlight tweaks when the colorscheme changes
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				pattern = "*",
+				callback = tinted_customize,
+				group = vim.api.nvim_create_augroup("on_change_colorschema", { clear = true }),
+			})
+
+			vim.cmd("colorscheme base16-classic-dark")
+		end,
+	},
 	{
 		"vague2k/vague.nvim",
 		config = function()
 			require("vague").setup({ transparent = true })
-			vim.cmd("colorscheme vague")
 			vim.cmd(":hi statusline guibg=NONE")
 		end,
 	},
