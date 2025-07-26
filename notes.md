@@ -1,4 +1,4 @@
----
+--
 title: Neovim Notes
 description: Personal learnings, keybinds, and tips for mastering Neovim.
 author: Srinivas 
@@ -22,8 +22,9 @@ tags: [neovim, tips]
 - Jump to mark: `'a` (line) / `` `a `` (cursor)
 - Delete: `:delmarks a`
 
-> [!NOTE]
-> "`" "'" are not literal marks you set — they represent the last jump location
-
-
+>[!NOTE]
+> Marks like `` ` `` and `'` are not literal characters in your text.
+> They represent positions saved by Neovim (e.g., last jump location).
+> - `` `` `` jumps to the exact cursor position of your last change.
+> - `''` jumps to the start of the line of that change.
 
