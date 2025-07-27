@@ -22,4 +22,5 @@ vim.opt.incsearch = true
 vim.opt.hlsearch = false
 vim.opt.scrolloff = 4
 vim.opt.signcolumn = "yes"
+vim.o.winborder = "rounded"
 vim.opt.foldopen = "mark,percent,quickfix,search,tag,undo"

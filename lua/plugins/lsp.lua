@@ -1,18 +1,11 @@
 return {
 	{
-		"folke/lazydev.nvim",
-		ft = "lua",
-		opts = {
-			library = {},
-		},
-	},
-	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			{ "mason-org/mason.nvim", opts = {} },
 			"mason-org/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
-			{ "j-hui/fidget.nvim", opts = {} },
+			{ "j-hui/fidget.nvim", opts = { notification = { window = { winblend = 0 } } } },
 			"saghen/blink.cmp",
 		},
 		config = function()
@@ -27,11 +20,7 @@ return {
 					---@param bufnr? integer some lsp support methods only in specific files
 					---@return boolean
 					local function client_supports_method(client, method, bufnr)
-						if vim.fn.has("nvim-0.11") == 1 then
-							return client:supports_method(method, bufnr)
-						else
-							return client.supports_method(method, { bufnr = bufnr })
-						end
+						return client:supports_method(method, bufnr)
 					end
 
 					local l = vim.lsp
@@ -55,6 +44,7 @@ return {
 
 					autocmd({ "BufEnter", "BufWinEnter" }, {
 						pattern = { "*.vert", "*.frag" },
+						---@diagnostic disable-next-line: unused-local
 						callback = function(e)
 							vim.cmd("set filetype=glsl")
 						end,
@@ -84,14 +74,7 @@ return {
 					-- When you move your cursor, the highlights will be cleared (the second autocommand).
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
-					if
-						client
-						and client_supports_method(
-							client,
-							vim.lsp.protocol.Methods.textDocument_documentHighlight,
-							event.buf
-						)
-					then
+					if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
 						local highlight_augroup =
 							vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
 						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
@@ -115,10 +98,9 @@ return {
 						})
 					end
 
-					if
-						client
-						and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf)
-					then
+					-- The following code creates a keymap to toggle inlay hints in your
+					-- code, if the language server you are using supports them
+					if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
 						map("<leader>th", function()
 							vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
 						end, "[T]oggle Inlay [H]ints")
@@ -163,27 +145,7 @@ return {
 			)
 
 			local servers = {
-				lua_ls = {
-					capabilities = capabilities,
-					settings = {
-						Lua = {
-							diagnostics = {
-								globals = { "vim" },
-							},
-							completion = {
-								callSnippet = "Replace",
-							},
-							workspace = {
-								library = {
-									[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-									[vim.fn.stdpath("config") .. "/lua"] = true,
-								},
-							},
-						},
-					},
-				},
 				ts_ls = {
-					capabilities = capabilities,
 					single_file_support = false,
 					on_attach = function(client)
 						client.server_capabilities.documentFormattingProvider = false
@@ -195,9 +157,52 @@ return {
 						},
 					},
 				},
-				gopls = { capabilities = capabilities },
-				html = { capabilities = capabilities },
-				cssls = { capabilities = capabilities },
+				ruff = {},
+				pylsp = {
+					settings = {
+						pylsp = {
+							plugins = {
+								pyflakes = { enabled = false },
+								pycodestyle = { enabled = false },
+								autopep8 = { enabled = false },
+								yapf = { enabled = false },
+								mccabe = { enabled = false },
+								pylsp_mypy = { enabled = false },
+								pylsp_black = { enabled = false },
+								pylsp_isort = { enabled = false },
+							},
+						},
+					},
+				},
+				html = { filetypes = { "html", "twig", "hbs" } },
+				cssls = {},
+				tailwindcss = {},
+				dockerls = {},
+				sqlls = {},
+				terraformls = {},
+				jsonls = {},
+				yamlls = {},
+				lua_ls = {
+					settings = {
+						Lua = {
+							completion = {
+								callSnippet = "Replace",
+							},
+							runtime = { version = "LuaJIT" },
+							workspace = {
+								checkThirdParty = false,
+								library = vim.api.nvim_get_runtime_file("", true),
+							},
+							diagnostics = {
+								globals = { "vim" },
+								disable = { "missing-fields" },
+							},
+							format = {
+								enable = false,
+							},
+						},
+					},
+				},
 			}
 
 			local ensure_installed = vim.tbl_keys(servers or {})
@@ -206,17 +211,16 @@ return {
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-			require("mason-lspconfig").setup({
-				ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-				automatic_installation = false,
-				handlers = {
-					function(server_name)
-						local server = servers[server_name] or {}
-						server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-						require("lspconfig")[server_name].setup(server)
-					end,
-				},
-			})
+			for server, cfg in pairs(servers) do
+				-- For each LSP server (cfg), we merge:
+				-- 1. A fresh empty table (to avoid mutating capabilities globally)
+				-- 2. Your capabilities object with Neovim + cmp features
+				-- 3. Any server-specific cfg.capabilities if defined in `servers`
+				cfg.capabilities = vim.tbl_deep_extend("force", {}, capabilities, cfg.capabilities or {})
+
+				vim.lsp.config(server, cfg)
+				vim.lsp.enable(server)
+			end
 		end,
 	},
 }

@@ -87,7 +87,4 @@ map("v", ">", ">gv", { desc = "(V) Indent to right" })
 map("v", "<leader>r", '"hy:%s/<C-r>h//g<left><left>') -- Replace all instances of highlighted words
 map("v", "<C-s>", ":sort<CR>") -- Sort highlighted text in visual mode with Control+S
 
-vim.keymap.set("n", "<leader>tc", function()
-	require("utils").tree()
-end, { desc = "Tree-sitter select code node" })
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
