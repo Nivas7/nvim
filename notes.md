@@ -25,7 +25,7 @@
 > It is native File Explored bundeled with neovim
 
 
-### 📆 Sidebar-Like File Explorer
+###  Sidebar-Like File Explorer
 
 ```vim
 :Lex
@@ -37,7 +37,7 @@
 
 ---
 
-### 🔁 Fix Split/Window Opening Bugs
+###  Fix Split/Window Opening Bugs
 
 ```vim
 :let g:netrw_chgwin = -1
@@ -77,7 +77,7 @@ vim.g.netrw_list_hide = [[\(^\|\s\s\)\zs\.\S\+]]
 
 ---
 
-### 📁 Quick Bookmark Navigation
+###  Quick Bookmark Navigation
 
 ```vim
 mb    " Mark bookmark
