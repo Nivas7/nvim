@@ -1,4 +1,3 @@
--- statusline.lua
 local statusline = {}
 _G.statusline = statusline
 
@@ -8,8 +7,8 @@ local bo = vim.bo
 local diagnostic = vim.diagnostic
 local lsp = vim.lsp
 
----@tyepe table
 statusline.highlight_definitions = {}
+
 --- Define or update a highlight group
 ---@param name string
 ---@param hl_or_color string
@@ -32,24 +31,37 @@ end
 ---@param hl_name string
 ---@param def table
 function statusline.create_or_update_hl(hl_name, def)
-	local normal_hl = api.nvim_get_hl(0, { name = "Normal" })
-	local base_hl = api.nvim_get_hl(0, { name = "StatusLine" })
+	local normal_hl = api.nvim_get_hl(0, { name = "Normal", link = false }) or {}
+	local base_hl = api.nvim_get_hl(0, { name = "StatusLine", link = false }) or {}
+
 	local fg_color
 
 	if def.hl_or_color:sub(1, 1) == "#" then
 		fg_color = def.hl_or_color
 	else
-		local src_hl = api.nvim_get_hl(0, { name = def.hl_or_color })
+		local src_hl = api.nvim_get_hl(0, { name = def.hl_or_color, link = false }) or {}
 		if src_hl.link then
-			src_hl = api.nvim_get_hl(0, { name = src_hl.link })
+			src_hl = api.nvim_get_hl(0, { name = src_hl.link, link = false }) or {}
 		end
+
 		local key = def.color_type == "bg" and "bg" or "fg"
-		fg_color = src_hl[key] and string.format("#%06x", src_hl[key]) or string.format("#%06x", normal_hl[key])
+		local fallback = normal_hl[key] or 0xFFFFFF -- default white if not found
+
+		if src_hl[key] then
+			fg_color = string.format("#%06x", src_hl[key])
+		else
+			fg_color = string.format("#%06x", fallback)
+		end
+	end
+
+	local bg_color = base_hl.bg or normal_hl.bg or 0x000000
+	if type(bg_color) == "number" then
+		bg_color = string.format("#%06x", bg_color)
 	end
 
 	api.nvim_set_hl(0, hl_name, {
 		fg = fg_color,
-		bg = base_hl.bg and string.format("#%06x", base_hl.bg) or normal_hl.bg,
+		bg = bg_color,
 		bold = def.bold or false,
 	})
 end
@@ -71,10 +83,8 @@ local function highlight_segment(hl, text)
 	return string.format("%%#%s#%s", hl, text)
 end
 
----@return string
 local function get_mode()
 	local mode_map = {
-            -- stylua: ignore start
 		n = "NO",
 		v = "VI",
 		V = "VL",
@@ -83,19 +93,16 @@ local function get_mode()
 		R = "RE",
 		c = "CO",
 		t = "TE",
-		-- stylua: ignore end
 	}
 	local mode = api.nvim_get_mode().mode
 	return highlight_segment("Statusline", " " .. (mode_map[mode] or mode))
 end
 
----@return string
 local function get_cwd()
 	---@diagnostic disable-next-line: undefined-field
 	return highlight_segment("StatusLinePath", " " .. fn.fnamemodify(vim.uv.cwd(), ":t"))
 end
 
----@return string
 local function get_filename()
 	if bo.filetype == "intro" then
 		return ""
@@ -124,7 +131,6 @@ local function get_filename()
 	})
 end
 
----@return string
 local function get_git_status()
 	local summary = vim.b.minidiff_summary
 	local branch = vim.b.git_branch or ""
@@ -170,11 +176,8 @@ local function get_diagnostics()
 	return table.concat(out, " ")
 end
 
--- Function to get the LSP status
----@return string
 local function get_lsp_status()
 	for _, client in ipairs(lsp.get_clients()) do
-		---@diagnostic disable-next-line: undefined-field
 		if vim.tbl_contains(client.config.filetypes or {}, bo.filetype) then
 			return highlight_segment("StatusLineLSP", "[" .. client.name .. "]")
 		end

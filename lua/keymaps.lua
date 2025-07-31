@@ -71,15 +71,9 @@ end, { desc = "LSP: Toggle diagnostic virtual_lines" })
 ----------
 map("n", "<leader>ss", '<cmd>source<CR><cmd>echo "sourced" expand("%:t")<CR>', { desc = "MISC: source current file" })
 
--- Buffers
-
-map("n", "<leader>q", "<cmd>q!<CR>", { desc = "Close buffer/window" })
-map("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Go to next buffer" })
-map("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Go to previous buffer" })
-map("n", "]b", "<cmd>bnext<CR>", { desc = "Go to next buffer" })
-map("n", "[b", "<cmd>bprevious<CR>", { desc = "Go to previous buffer" })
-
--- Stay in indent mode
+map("n", "<Tab>", ":bnext<CR>", { desc = "next buffer", noremap = true, silent = true })
+map("n", "<S-Tab>", ":bprevious<CR>", { desc = "previous buffer", noremap = true, silent = true })
+map("n", "<leader>x", ":bdelete<CR>", { desc = "close buffer", noremap = true, silent = true })
 map("v", "<", "<gv", { desc = "(V) Indent to left" })
 map("v", ">", ">gv", { desc = "(V) Indent to right" })
 
@@ -87,4 +81,9 @@ map("v", ">", ">gv", { desc = "(V) Indent to right" })
 map("v", "<leader>r", '"hy:%s/<C-r>h//g<left><left>') -- Replace all instances of highlighted words
 map("v", "<C-s>", ":sort<CR>") -- Sort highlighted text in visual mode with Control+S
 
-vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+map("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+vim.keymap.set("n", "<leader>da", ":Lexplore<CR>", {
+	desc = "Open Netrw (cwd)",
+	silent = true,
+	noremap = true,
+})
