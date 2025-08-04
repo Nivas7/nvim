@@ -23,6 +23,7 @@
 ## Netrw
 
 > It is native File Explored bundeled with neovim
+> [ref](https://vonheikemen.github.io/devlog/tools/using-netrw-vim-builtin-file-explorer/)
 
 
 ###  Sidebar-Like File Explorer

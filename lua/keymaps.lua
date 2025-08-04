@@ -82,8 +82,8 @@ map("v", "<leader>r", '"hy:%s/<C-r>h//g<left><left>') -- Replace all instances o
 map("v", "<C-s>", ":sort<CR>") -- Sort highlighted text in visual mode with Control+S
 
 map("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
-vim.keymap.set("n", "<leader>da", ":Lexplore<CR>", {
-	desc = "Open Netrw (cwd)",
-	silent = true,
-	noremap = true,
-})
+-- vim.keymap.set("n", "<leader>da", ":Lexplore<CR>", {
+--  desc = "Open Netrw (cwd)",
+--  silent = true,
+--  noremap = true,
+-- })

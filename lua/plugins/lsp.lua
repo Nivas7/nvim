@@ -149,6 +149,7 @@ return {
 					single_file_support = false,
 					on_attach = function(client)
 						client.server_capabilities.documentFormattingProvider = false
+						client.server_capabilities.completionProvider.triggerCharacters = {}
 					end,
 					init_options = {
 						preferences = {
@@ -157,31 +158,8 @@ return {
 						},
 					},
 				},
-				ruff = {},
-				pylsp = {
-					settings = {
-						pylsp = {
-							plugins = {
-								pyflakes = { enabled = false },
-								pycodestyle = { enabled = false },
-								autopep8 = { enabled = false },
-								yapf = { enabled = false },
-								mccabe = { enabled = false },
-								pylsp_mypy = { enabled = false },
-								pylsp_black = { enabled = false },
-								pylsp_isort = { enabled = false },
-							},
-						},
-					},
-				},
 				html = { filetypes = { "html", "twig", "hbs" } },
-				cssls = {},
 				tailwindcss = {},
-				dockerls = {},
-				sqlls = {},
-				terraformls = {},
-				jsonls = {},
-				yamlls = {},
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -202,6 +180,11 @@ return {
 							},
 						},
 					},
+					on_attach = function(client)
+						if client.server_capabilities.completionProvider then
+							client.server_capabilities.completionProvider.triggerCharacters = {}
+						end
+					end,
 				},
 			}
 

@@ -26,7 +26,7 @@ return { -- Autocompletion
 		"folke/lazydev.nvim",
 	},
 	--- @module 'blink.cmp'
-	--- @type blink.cmp.Config
+
 	opts = {
 		keymap = {
 			preset = "default",
@@ -43,6 +43,7 @@ return { -- Autocompletion
 
 			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 			["<C-e>"] = { "hide", "fallback" },
+			["<C-\\>"] = { "show", "show_documentation", "hide_documentation" }, -- Ctrl + Leader alternative
 		},
 
 		appearance = {
@@ -50,16 +51,24 @@ return { -- Autocompletion
 		},
 
 		completion = {
-			documentation = { auto_show = false, auto_show_delay_ms = 500 },
+			documentation = {
+				auto_show = false,
+				auto_show_delay_ms = 500,
+			},
 		},
 
 		sources = {
 			default = { "lsp", "path", "snippets" },
 			providers = {
-				lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
+				lazydev = {
+					module = "lazydev.integrations.blink",
+					score_offset = 100,
+				},
 			},
 		},
 
-		snippets = { preset = "luasnip" },
+		snippets = {
+			preset = "luasnip",
+		},
 	},
 }
