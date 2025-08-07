@@ -1,74 +1,19 @@
-return { -- Autocompletion
-
+-- TODO: fix config options.
+return {
 	"saghen/blink.cmp",
-	event = "VimEnter",
-	version = "1.*",
-	dependencies = {
-		{
-			"L3MON4D3/LuaSnip",
-			version = "2.*",
-			build = (function()
-				if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
-					return
-				end
-				return "make install_jsregexp"
-			end)(),
-			dependencies = {
-				{
-					"rafamadriz/friendly-snippets",
-					config = function()
-						require("luasnip.loaders.from_vscode").lazy_load()
-					end,
-				},
-			},
-			opts = {},
-		},
-		"folke/lazydev.nvim",
-	},
-	--- @module 'blink.cmp'
-
+	enabled = true,
+	version = "*",
+	event = { "InsertEnter", "CmdlineEnter" },
 	opts = {
+		signature = { enabled = true },
 		keymap = {
-			preset = "default",
-			["<Tab>"] = { "snippet_forward", "fallback" },
-			["<S-Tab>"] = { "snippet_backward", "fallback" },
-
-			["<Up>"] = { "select_prev", "fallback" },
-			["<Down>"] = { "select_next", "fallback" },
-			["<C-p>"] = { "select_prev", "fallback" },
-			["<C-n>"] = { "select_next", "fallback" },
-
-			["<S-k>"] = { "scroll_documentation_up", "fallback" },
-			["<S-j>"] = { "scroll_documentation_down", "fallback" },
-
-			["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-			["<C-e>"] = { "hide", "fallback" },
-			["<C-\\>"] = { "show", "show_documentation", "hide_documentation" }, -- Ctrl + Leader alternative
+			preset = "none",
+			["<S-Tab>"] = { "select_prev", "fallback" },
+			["<Tab>"] = { "select_next", "fallback" },
+			["<CR>"] = { "select_and_accept", "fallback" },
 		},
-
-		appearance = {
-			nerd_font_variant = "mono",
-		},
-
-		completion = {
-			documentation = {
-				auto_show = false,
-				auto_show_delay_ms = 500,
-			},
-		},
-
-		sources = {
-			default = { "lsp", "path", "snippets" },
-			providers = {
-				lazydev = {
-					module = "lazydev.integrations.blink",
-					score_offset = 100,
-				},
-			},
-		},
-
-		snippets = {
-			preset = "luasnip",
+		cmdline = {
+			keymap = { preset = "enter" },
 		},
 	},
 }

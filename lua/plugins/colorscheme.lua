@@ -1,6 +1,16 @@
 return {
 	-- Base16 theme configuration in pure Lua
 	{
+		"craftzdog/solarized-osaka.nvim",
+		lazy = true,
+		priority = 1000,
+		opts = function()
+			return {
+				transparent = true,
+			}
+		end,
+	},
+	{
 		"tinted-theming/tinted-vim",
 		lazy = false,
 		priority = 1000,

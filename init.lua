@@ -4,8 +4,6 @@ require("statusline")
 require("statuscolumn")
 require("autocmds")
 
-vim.o.background = "dark"
-vim.cmd.colorscheme("metal")
 vim.cmd("set completeopt+=noselect")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -33,3 +31,5 @@ require("lazy").setup({
 		check_pinned = false, -- check for pinned packages that can't be updated
 	},
 })
+
+vim.cmd.colorscheme("metal")
