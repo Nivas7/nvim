@@ -160,6 +160,7 @@ return {
 				},
 				html = { filetypes = { "html", "twig", "hbs" } },
 				tailwindcss = {},
+				gopls = {},
 				lua_ls = {
 					settings = {
 						Lua = {

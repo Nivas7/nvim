@@ -1,8 +1,6 @@
-require("options")
-require("keymaps")
-require("statusline")
-require("statuscolumn")
-require("autocmds")
+require("config.options")
+require("config.keymaps")
+require("config.autocmds")
 
 vim.cmd("set completeopt+=noselect")
 
@@ -31,5 +29,3 @@ require("lazy").setup({
 		check_pinned = false, -- check for pinned packages that can't be updated
 	},
 })
-
-vim.cmd.colorscheme("metal")

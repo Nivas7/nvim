@@ -1,82 +1,5 @@
 return {
-	-- Base16 theme configuration in pure Lua
-	{
-		"craftzdog/solarized-osaka.nvim",
-		lazy = true,
-		priority = 1000,
-		opts = function()
-			return {
-				transparent = true,
-			}
-		end,
-	},
-	{
-		"tinted-theming/tinted-vim",
-		lazy = false,
-		priority = 1000,
-		init = function()
-			-- Enable true color support
-			vim.opt.termguicolors = true
 
-			-- Enable italics support for themes like 'one'
-			vim.g.one_allow_italics = 1
-
-			-- Set background to transparent for UI elements
-			local transparent_groups = {
-				"Normal",
-				"NormalNC",
-				"NormalFloat",
-				"FloatBorder",
-				"StatusLine",
-				"VertSplit",
-				"LineNr",
-				"SignColumn",
-				"EndOfBuffer",
-				"DiagnosticFloatingError",
-				"DiagnosticFloatingWarn",
-				"DiagnosticFloatingInfo",
-				"DiagnosticFloatingHint",
-				"DiagnosticFloatingOk",
-				"Pmenu",
-				"TelescopeNormal",
-				"TelescopeBorder",
-			}
-
-			for _, group in ipairs(transparent_groups) do
-				vim.api.nvim_set_hl(0, group, { bg = "#000000" })
-			end
-
-			-- Optional: link some highlights for better UI consistency
-			vim.api.nvim_set_hl(0, "FloatBorder", { link = "LineNr" })
-			vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
-
-			-- Define your custom highlights
-			local function tinted_customize()
-				vim.api.nvim_set_hl(0, "@variable.member", {
-					fg = "#acc142",
-					ctermfg = 2,
-				})
-			end
-
-			-- Apply highlight overrides now
-			tinted_customize()
-
-			-- Re-apply highlights when colorscheme changes
-			vim.api.nvim_create_autocmd("ColorScheme", {
-				pattern = "*",
-				callback = tinted_customize,
-				group = vim.api.nvim_create_augroup("on_change_colorschema", { clear = true }),
-			})
-		end,
-		vim.api.nvim_set_hl(0, "Normal", { bg = "#000000" }),
-	},
-	{
-		"vague2k/vague.nvim",
-		config = function()
-			require("vague").setup({ transparent = true })
-			vim.cmd(":hi statusline guibg=NONE")
-		end,
-	},
 	{
 		"rose-pine/neovim",
 		lazy = false,
@@ -200,68 +123,140 @@ return {
 				show_end_of_buffer = false,
 				integration_default = false,
 				no_bold = true,
-				no_italic = false,
+				no_italic = true,
 				no_underline = true,
-				styles = {
-					sidebars = "transparent",
-					floats = "transparent",
-				},
 				integrations = {
+					blink_cmp = {
+						style = "rounded",
+					},
+					snacks = {
+						enabled = true,
+						-- indent_scope_color = "lavender", -- catppuccin color (eg. `lavender`) Default: text
+					},
 					barbecue = { dim_dirname = true, bold_basename = true, dim_context = false, alt_background = false },
-					cmp = true,
+					-- cmp = true,
 					gitsigns = true,
-					hop = true,
-					illuminate = { enabled = true },
+					-- hop = true,
+					-- illuminate = { enabled = true },
 					native_lsp = { enabled = true, inlay_hints = { background = true } },
-					neogit = true,
-					neotree = true,
+					-- neogit = true,
+					-- neotree = true,
 					semantic_tokens = true,
 					treesitter = true,
 					treesitter_context = true,
-					vimwiki = true,
+					-- vimwiki = true,
 					which_key = true,
-					aerial = true,
+					-- aerial = true,
 					fidget = true,
 					mason = true,
 					neotest = true,
 					dap_ui = true,
-					telescope = {
-						enabled = true,
-						style = "nvchad",
-					},
-					snacks = true,
 				},
 				highlight_overrides = {
 					all = function(colors)
 						return {
+							-- Completion menu styling
+							Pmenu = { bg = colors.mantle, fg = colors.text },
+							PmenuSel = { bg = colors.surface0, fg = colors.text },
+							PmenuSbar = { bg = colors.surface0 },
+							PmenuThumb = { bg = colors.surface2 },
+							PmenuExtra = { bg = colors.mantle, fg = colors.subtext1 },
+
+							-- Floating windows
+							NormalFloat = { bg = colors.mantle },
+							FloatBorder = { bg = colors.mantle, fg = colors.surface2 },
+							FloatTitle = { bg = colors.mantle, fg = colors.text },
+
+							-- Blink.cmp specific highlighting
+							BlinkCmpMenu = { bg = colors.mantle, fg = colors.text },
+							BlinkCmpMenuBorder = { bg = colors.mantle, fg = colors.surface2 },
+							BlinkCmpMenuSelection = { bg = colors.surface0, fg = colors.text },
+							BlinkCmpScrollBarThumb = { bg = colors.surface2 },
+							BlinkCmpScrollBarGutter = { bg = colors.surface0 },
+							BlinkCmpLabel = { bg = colors.mantle, fg = colors.text },
+							BlinkCmpLabelDeprecated = {
+								bg = colors.mantle,
+								fg = colors.overlay0,
+								strikethrough = true,
+							},
+							BlinkCmpLabelDetail = { bg = colors.mantle, fg = colors.subtext1 },
+							BlinkCmpLabelDescription = { bg = colors.mantle, fg = colors.subtext1 },
+							BlinkCmpKind = { bg = colors.mantle, fg = colors.peach },
+							BlinkCmpSource = { bg = colors.mantle, fg = colors.overlay1 },
+							BlinkCmpGhostText = { fg = colors.overlay0, italic = true },
+							BlinkCmpDoc = { bg = colors.mantle, fg = colors.text },
+							BlinkCmpDocBorder = { bg = colors.mantle, fg = colors.surface2 },
+							BlinkCmpDocSeparator = { bg = colors.mantle, fg = colors.surface1 },
+							BlinkCmpDocCursorLine = { bg = colors.surface0 },
+							BlinkCmpSignatureHelp = { bg = colors.mantle, fg = colors.text },
+							BlinkCmpSignatureHelpBorder = { bg = colors.mantle, fg = colors.surface2 },
+							BlinkCmpSignatureHelpActiveParameter = {
+								bg = colors.surface0,
+								fg = colors.peach,
+								bold = true,
+							},
+
+							-- Snacks.nvim picker NvChad style
+							SnacksPicker = { bg = colors.base },
+							SnacksPickerBorder = { fg = colors.surface0, bg = colors.base },
+							SnacksPickerPreview = { bg = colors.base },
+							SnacksPickerPreviewBorder = { fg = colors.base, bg = colors.base },
+							SnacksPickerPreviewTitle = { fg = colors.base, bg = colors.green },
+							SnacksPickerBoxBorder = { fg = colors.base, bg = colors.base },
+							SnacksPickerInputBorder = { fg = colors.surface2, bg = colors.base },
+							SnacksPickerInputSearch = { fg = colors.text, bg = colors.base },
+							SnacksPickerList = { bg = colors.base },
+							SnacksPickerListBorder = { fg = colors.base, bg = colors.base },
+							SnacksPickerListTitle = { fg = colors.base, bg = colors.base },
+
+							-- Additional picker elements
+							SnacksPickerDir = { fg = colors.blue },
+							SnacksPickerFile = { fg = colors.text },
+							SnacksPickerMatch = { fg = colors.peach, bold = true },
+							SnacksPickerCursor = { bg = colors.surface0, fg = colors.text },
+							SnacksPickerSelected = { bg = colors.surface0, fg = colors.text },
+							SnacksPickerIcon = { fg = colors.blue },
+							SnacksPickerSource = { fg = colors.overlay1 },
+							SnacksPickerCount = { fg = colors.overlay1 },
+							SnacksPickerFooter = { fg = colors.overlay1 },
+							SnacksPickerHeader = { fg = colors.text, bold = true },
+							SnacksPickerSpecial = { fg = colors.peach },
+							SnacksPickerIndent = { fg = colors.surface1 },
+							SnacksPickerMulti = { fg = colors.peach },
+							SnacksPickerTitle = { fg = colors.text, bold = true },
+							SnacksPickerPrompt = { fg = colors.text },
+
+							-- Snacks core components
+							SnacksNotifierNormal = { bg = colors.mantle, fg = colors.text },
+							SnacksNotifierBorder = { bg = colors.mantle, fg = colors.surface2 },
+							SnacksNotifierTitle = { bg = colors.mantle, fg = colors.text, bold = true },
+							SnacksNotifierIcon = { bg = colors.mantle, fg = colors.blue },
+							SnacksNotifierIconInfo = { bg = colors.mantle, fg = colors.blue },
+							SnacksNotifierIconWarn = { bg = colors.mantle, fg = colors.yellow },
+							SnacksNotifierIconError = { bg = colors.mantle, fg = colors.red },
+
+							-- Snacks Dashboard
+							SnacksDashboardNormal = { bg = colors.base, fg = colors.text },
+							SnacksDashboardDesc = { bg = colors.base, fg = colors.subtext1 },
+							SnacksDashboardFile = { bg = colors.base, fg = colors.text },
+							SnacksDashboardDir = { bg = colors.base, fg = colors.blue },
+							SnacksDashboardFooter = { bg = colors.base, fg = colors.overlay1 },
+							SnacksDashboardHeader = { bg = colors.base, fg = colors.text, bold = true },
+							SnacksDashboardIcon = { bg = colors.base, fg = colors.blue },
+							SnacksDashboardKey = { bg = colors.base, fg = colors.peach },
+							SnacksDashboardTerminal = { bg = colors.base, fg = colors.text },
+							SnacksDashboardSpecial = { bg = colors.base, fg = colors.peach },
+
+							-- Snacks Terminal
+							SnacksTerminalNormal = { bg = colors.mantle, fg = colors.text },
+							SnacksTerminalBorder = { bg = colors.mantle, fg = colors.surface2 },
+							SnacksTerminalTitle = { bg = colors.mantle, fg = colors.text, bold = true },
+
 							CmpItemMenu = { fg = colors.surface2 },
 							CursorLineNr = { fg = colors.text },
-							FloatBorder = { bg = colors.base, fg = colors.surface0 },
 							GitSignsChange = { fg = colors.peach },
 							LineNr = { fg = colors.overlay0 },
 							LspInfoBorder = { link = "FloatBorder" },
-							NeoTreeDirectoryIcon = { fg = colors.subtext1 },
-							NeoTreeDirectoryName = { fg = colors.subtext1 },
-							NeoTreeFloatBorder = { link = "TelescopeResultsBorder" },
-							NeoTreeGitConflict = { fg = colors.red },
-							NeoTreeGitDeleted = { fg = colors.red },
-							NeoTreeGitIgnored = { fg = colors.overlay0 },
-							NeoTreeGitModified = { fg = colors.peach },
-							NeoTreeGitStaged = { fg = colors.green },
-							NeoTreeGitUnstaged = { fg = colors.red },
-							NeoTreeGitUntracked = { fg = colors.green },
-							NeoTreeIndent = { fg = colors.surface1 },
-							NeoTreeNormal = { bg = colors.mantle },
-							NeoTreeNormalNC = { bg = colors.mantle },
-							NeoTreeRootName = { fg = colors.subtext1, style = { "bold" } },
-							NeoTreeTabActive = { fg = colors.text, bg = colors.mantle },
-							NeoTreeTabInactive = { fg = colors.surface2, bg = colors.crust },
-							NeoTreeTabSeparatorActive = { fg = colors.mantle, bg = colors.mantle },
-							NeoTreeTabSeparatorInactive = { fg = colors.crust, bg = colors.crust },
-							NeoTreeWinSeparator = { fg = colors.base, bg = colors.base },
-							NormalFloat = { bg = colors.base },
-							Pmenu = { bg = colors.mantle, fg = "" },
-							PmenuSel = { bg = colors.surface0, fg = "" },
 							VertSplit = { bg = colors.base, fg = colors.surface0 },
 							WhichKeyFloat = { bg = colors.mantle },
 							YankHighlight = { bg = colors.surface2 },
@@ -487,35 +482,7 @@ return {
 					end,
 				},
 			})
-		end,
-	},
-	{
-		"ellisonleao/gruvbox.nvim",
-		priority = 1000, -- make sure it loads first
-		config = function()
-			require("gruvbox").setup({
-				terminal_colors = true,
-				undercurl = true,
-				underline = true,
-				bold = true,
-				italic = {
-					strings = true,
-					emphasis = true,
-					comments = true,
-					operators = false,
-					folds = true,
-				},
-				strikethrough = true,
-				invert_selection = false,
-				invert_signs = false,
-				invert_tabline = false,
-				inverse = true,
-				contrast = "", -- "hard", "soft" or ""
-				palette_overrides = {},
-				overrides = {},
-				dim_inactive = false,
-				transparent_mode = true,
-			})
+			vim.api.nvim_command("colorscheme catppuccin")
 		end,
 	},
 }
