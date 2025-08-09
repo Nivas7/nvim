@@ -1,4 +1,3 @@
-
 local options = {
   backup = false, -- creates a backup file
   autochdir = false,
@@ -38,6 +37,7 @@ local options = {
   guifont = "JetBrainsMono NF:h14", -- the font used in graphical neovim applications
   sidescrolloff = 8, -- the number of lines to keep visible at the top and bottom of the screen
   laststatus = 3, -- controls how the command line looks when there is no message to display
+  statuscolumn = "%l%s",
   virtualedit = "onemore", -- allows the cursor to move beyond the end of a line
   linebreak = true, -- determines whether text will wrap at the edge of the screen
   showtabline = 1, -- determines whether the tab line will be displayed
@@ -65,3 +65,4 @@ vim.opt.shortmess:append({ C = true, c = true, I = true })
 vim.opt.cinkeys:remove(":")
 vim.opt.indentkeys:remove(":")
 vim.g.c_syntax_for_h = true
+

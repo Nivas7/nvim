@@ -1,7 +1,5 @@
 return {
   "stevearc/conform.nvim",
-  event = { "BufWritePre" }, -- loads before saving a file
-  cmd = { "Format", "FormatToggle" }, -- lazy-load on these commands too
   config = function()
     local conform = require("conform")
 

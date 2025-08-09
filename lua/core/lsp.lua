@@ -39,7 +39,6 @@ local config = {
 }
 vim.diagnostic.config(config)
 
-
 -- Improve LSPs UI {{{
 local icons = {
   Class = " ",
@@ -70,8 +69,6 @@ local completion_kinds = vim.lsp.protocol.CompletionItemKind
 for i, kind in ipairs(completion_kinds) do
   completion_kinds[i] = icons[kind] and icons[kind] .. kind or kind
 end
-
-
 
 -- Lsp capabilities and on_attach {{{
 -- Here we grab default Neovim capabilities and extend them with ones we want on top
@@ -121,10 +118,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     -- -- nightly has inbuilt completions, this can replace all completion plugins
-    -- if client:supports_method("textDocument/completion", bufnr) then
-    --   -- Enable auto-completion
-    --   vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = true })
-    -- end
+     if client:supports_method("textDocument/completion", bufnr) then
+       -- Enable auto-completion
+       vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = true })
+     end
 
     --- Disable semantic tokens
     ---@diagnostic disable-next-line need-check-nil
@@ -181,7 +178,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- stylua: ignore end
   end,
 })
-
 
 -- Start, Stop, Restart, Log commands {{{
 vim.api.nvim_create_user_command("LspStart", function()
