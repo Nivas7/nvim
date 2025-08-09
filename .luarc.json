@@ -1,5 +1,19 @@
 {
-    "diagnostics.disable": [
-        "lowercase-global"
-    ]
+	"runtime.version": "LuaJIT",
+	"runtime.path": ["lua/?.lua", "lua/?/init.lua"],
+	"diagnostics.globals": [
+		"_G",
+		"vim",
+		"MiniFiles",
+		"MiniDeps",
+		"MiniSessions",
+		"MiniBufremove",
+		"MiniExtra",
+		"MiniPick",
+		"MiniIcons"
+	],
+	"workspace.checkThirdParty": false,
+	"hint.enable": true,
+	"workspace.library": ["lua", "$VIMRUNTIME", "${3rd}/luv/library"],
+	"diagnostics.workspaceEvent": "OnSave"
 }
