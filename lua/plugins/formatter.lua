@@ -1,57 +1,111 @@
 return {
-	"stevearc/conform.nvim",
-	event = { "BufWritePre" },
-	cmd = { "ConformInfo" },
-	keys = {
-		{
-			"<leader>cf",
-			function()
-				require("conform").format({ async = true }, function(err, did_edit)
-					if not err and did_edit then
-						vim.notify("Code formatted", vim.log.levels.INFO, { title = "Conform" })
-					end
-				end)
-			end,
-			mode = { "n", "v" },
-			desc = "Format buffer",
-		},
-	},
-	opts = {
-		formatters_by_ft = {
-			-- Go
-			go = { "goimports", "gofmt" },
+  "stevearc/conform.nvim",
+  event = { "BufWritePre" }, -- loads before saving a file
+  cmd = { "Format", "FormatToggle" }, -- lazy-load on these commands too
+  config = function()
+    local conform = require("conform")
 
-			-- Lua
-			lua = { "stylua" },
+    conform.setup({
+      formatters_by_ft = {
+        -- general
+        ["*"] = { "injected" },
+        ["_"] = { "trim_whitespace" },
 
-			-- Web technologies
-			javascript = { "prettier" },
-			typescript = { "prettier" },
-			javascriptreact = { "prettier" },
-			typescriptreact = { "prettier" },
-			json = { "prettier" },
-			jsonc = { "prettier" },
-			yaml = { "prettier" },
-			markdown = { "prettier" },
-			html = { "prettier" },
-			css = { "prettier" },
-			scss = { "prettier" },
+        -- prettier filetypes
+        javascript = { "prettier" },
+        typescript = { "prettier" },
+        javascriptreact = { "prettier" },
+        json = { "prettier" },
+        jsonc = { "prettier" },
 
-			python = { "isort", "black" },
+        typescriptreact = { "prettier" },
+        svelte = { "prettier" },
+        css = { "prettier" },
+        html = { "prettier" },
+        yaml = { "prettier" },
+        markdown = { "prettier" },
+        graphql = { "prettier" },
+        vue = { "prettier" },
 
-			-- Shell
-			sh = { "shfmt" },
-			bash = { "shfmt" },
-		},
-		default_format_opts = {
-			lsp_format = "fallback",
-		},
-		-- format_on_save = {
-		--     timeout_ms = 1000,
-		--     lsp_format = "fallback",
-		-- },
-	},
-	init = function()
-		vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-	end,
+        lua = { "stylua" },
+
+        java = { "astyle" },
+        sh = { "shfmt" },
+        bash = { "shfmt" },
+        go = { "gofmt", "goimports" },
+      },
+
+      format_on_save = function(bufnr)
+        local function myCallback(err)
+          if err then
+            vim.notify("Error during formatting: ", err)
+          else
+            vim.notify("Formatting completed successfully.")
+          end
+        end
+        -- Disable with a global or buffer-local variable
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          return
+        end
+        -- Disable autoformat for files in a certain path
+        local bufname = vim.api.nvim_buf_get_name(bufnr)
+        if bufname:match("/node_modules/") then
+          return
+        end
+        return { timeout_ms = 1000, lsp_fallback = true }, myCallback()
+      end,
+
+      formatters = {
+        pyfix_imports = {
+          command = "pyfix-imports",
+          args = { "$FILENAME" },
+          stdin = true,
+          cwd = require("conform.util").root_file({
+            "requirements.txt",
+            "pyproject.toml",
+            ".git",
+          }),
+        },
+      },
+    })
+
+    vim.g.disable_autoformat = true
+
+    vim.api.nvim_create_user_command("Format", function()
+      local function myCallback(err)
+        if err then
+          vim.notify("Error during formatting: ", string(err))
+        else
+          vim.notify("Formatting completed successfully.")
+        end
+      end
+      conform.format({
+        lsp_fallback = true,
+        async = false,
+        timeout_ms = 1000,
+      }, myCallback())
+    end, {
+      desc = "Format the current file",
+    })
+
+    vim.api.nvim_create_user_command("FormatToggle", function()
+      if vim.b.disable_autoformat or vim.g.disable_autoformat then
+        vim.b.disable_autoformat = false
+        vim.g.disable_autoformat = false
+        vim.notify("AutoFormat Enabled")
+      else
+        vim.b.disable_autoformat = true
+        vim.g.disable_autoformat = true
+        vim.notify("AutoFormat Disabled")
+      end
+    end, {
+      desc = "Toggle autoformat-on-save",
+    })
+
+    vim.keymap.set("n", "<Leader>lf", "<Cmd>silent Format<CR>", {
+      desc = "Format the current file",
+      silent = true,
+    })
+  end,
 }
+

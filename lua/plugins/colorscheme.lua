@@ -119,7 +119,7 @@ return {
             crust = "#141618",
           },
         },
-        transparent_background = false,
+        transparent_background = true,
         show_end_of_buffer = false,
         integration_default = false,
         no_bold = true,
