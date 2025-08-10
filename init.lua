@@ -1,6 +1,7 @@
 vim.loader.enable()
 
-require("core.mason-path")
+local colorscheme = "metal"
+
 require("core.lsp")
 require("config.options")
 require("config.keymaps")
@@ -9,4 +10,8 @@ require("core.lazy")
 require("extras.statusline")
 require("extras.statuscolumn")
 
-
+-- theme
+vim.cmd("colorscheme " .. colorscheme)
+-- Transparency and colorcolumn
+vim.cmd("highlight Normal guibg=none")
+vim.cmd("highlight NonText guibg=none")

@@ -59,6 +59,13 @@ keymap("x", "K", ":move '<-2<CR>gv=gv", opts)
 keymap("x", "<A-j>", ":move '>+1<CR>gv=gv", opts)
 keymap("x", "<A-k>", ":move '<-2<CR>gv=gv", opts)
 
+-- Buffer --
+-- Better Buffer Navigation --
+keymap("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
+keymap("n", "<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
+keymap("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
+keymap("n", "<leader>bl", ":ls<CR>", { desc = "List buffers" })
+
 -- Terminal --
 -- Better terminal navigation
 keymap("t", "<C-h>", "<C-\\><C-N><C-w>h", opts)

@@ -1,5 +1,6 @@
 return {
 	"akinsho/bufferline.nvim",
+    enbled = false,
 	opts = {
 		options = {
 			mode = "tabs",

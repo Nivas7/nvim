@@ -2,12 +2,6 @@ return {
   {
     "echasnovski/mini.nvim",
     config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [']quote
-      --  - ci'  - [C]hange [I]nside [']quote
       local gen_spec = require("mini.ai").gen_spec
       local gen_ai_spec = require("mini.extra").gen_ai_spec
       require("mini.ai").setup({
@@ -37,6 +31,12 @@ return {
           N = gen_ai_spec.number(),
         },
       })
+      -- Better Around/Inside textobjects
+      --
+      -- Examples:
+      --  - va)  - [V]isually select [A]round [)]paren
+      --  - yinq - [Y]ank [I]nside [N]ext [']quote
+      --  - ci'  - [C]hange [I]nside [']quote
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
@@ -50,6 +50,7 @@ return {
       require("mini.comment").setup()
 
       require("mini.colors").setup()
+
 
       local hipatterns = require("mini.hipatterns")
       hipatterns.setup({

@@ -1,5 +1,4 @@
 return {
-
   {
     "rose-pine/neovim",
     lazy = false,
@@ -482,7 +481,6 @@ return {
           end,
         },
       })
-      vim.api.nvim_command("colorscheme catppuccin")
     end,
   },
 }
