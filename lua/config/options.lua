@@ -46,7 +46,7 @@ local options = {
     spelllang = "en_us",   -- sets the language for spell checking
     textwidth = 80,        -- limits the width of text that is being inserted
     foldtext = "",
-    -- foldexpr = "v:lua.vim.treesitter.foldexpr()", -- specifies the expression used to calculate folds
+    foldexpr = "v:lua.vim.treesitter.foldexpr()", -- specifies the expression used to calculate folds
     indentexpr = "nvim_treesitter#indent()", -- specifies the function used to calculate the indentation level
     fillchars = { eob = " ", fold = " " }, -- defines the characters used for certain parts of the screen
     wildoptions = { "fuzzy", "pum", "tagfile" },

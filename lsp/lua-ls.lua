@@ -1,4 +1,3 @@
-local blink = require("blink.cmp")
 return {
   cmd = { "lua-language-server" },
   filetypes = { "lua" },

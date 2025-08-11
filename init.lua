@@ -10,6 +10,7 @@ require("core.lazy")
 require("extras.statusline")
 require("extras.statuscolumn")
 
+
 -- theme
 vim.cmd("colorscheme " .. colorscheme)
 -- Transparency and colorcolumn
