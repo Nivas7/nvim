@@ -94,11 +94,6 @@ vim.lsp.config("*", {
 })
 -- }}}
 
--- Disable the default keybinds {{{
-for _, bind in ipairs({ "grn", "gra", "gri", "grr" }) do
-    pcall(vim.keymap.del, "n", bind)
-end
--- }}}
 
 -- Create keybindings, commands, inlay hints and autocommands on LSP attach {{{
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -136,7 +131,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local function opt(desc, others)
             return vim.tbl_extend("force", opts, { desc = desc }, others or {})
         end
-        keymap("n", "gd", lsp.buf.definition, opt("Go to definition"))
+        keymap("n", "gd", function() vim.lsp.buf.definition() end, opt("Go to definition"))
         keymap("n", "gD", function()
             local ok, diag = pcall(require, "extras.definition")
             if ok then
@@ -144,16 +139,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end
         end, opt("Get the definition in a float"))
 
-        keymap("n", "gD", lsp.buf.definition, opt("Go to definition"))
         keymap("n", "gi", function() lsp.buf.implementation({ border = "single" }) end, opt("Go to implementation"))
         keymap("n", "gr", lsp.buf.references, opt("Show References"))
         keymap("n", "gl", vim.diagnostic.open_float, opt("Open diagnostic in float"))
-        keymap("n", "<C-k>", lsp.buf.signature_help, opts)
+        keymap("n", "K", function() vim.lsp.buf.hover() end, opts)
         -- disable the default binding first before using a custom one
         pcall(vim.keymap.del, "n", "K", { buffer = ev.buf })
-        keymap("n", "K", function() lsp.buf.hover({ border = "single", max_height = 30, max_width = 120 }) end,
+        keymap("n", "K", function() lsp.buf.hover({ border = "rounded", max_height = 30, max_width = 120 }) end,
             opt("Toggle hover"))
-        keymap("n", "<leader>lf",function() vim.lsp.buf.format() end, opt("Toggle AutoFormat"))
+        keymap("n", "<leader>lf", function() vim.lsp.buf.format() end, opt("Toggle AutoFormat"))
         keymap("n", "<leader>lI", vim.cmd.Mason, opt("Mason"))
         keymap("n", "<leader>lS", lsp.buf.workspace_symbol, opt("Workspace Symbols"))
         keymap("n", "<leader>la", lsp.buf.code_action, opt("Code Action"))
@@ -163,6 +157,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
         keymap("n", "<leader>ll", lsp.codelens.run, opt("Run CodeLens"))
         keymap("n", "<leader>lr", lsp.buf.rename, opt("Rename"))
         keymap("n", "<leader>ls", lsp.buf.document_symbol, opt("Doument Symbols"))
+
+        keymap("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
+        keymap("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
+        keymap("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
+        keymap("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
+        keymap("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
 
         -- diagnostic mappings
         keymap("n", "<Leader>dD", function()
@@ -174,11 +174,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 vim.notify("INFO: Diagnostic populated")
             end
         end, opt("Popluate diagnostic for the whole workspace"))
-        keymap("n", "<Leader>dn", function() vim.diagnostic.jump({ count = 1, float = true }) end, opt("Next Diagnostic"))
-        keymap("n", "<Leader>dp", function() vim.diagnostic.jump({ count = -1, float = true }) end,
+        keymap("n", "<leader>dn", function() vim.diagnostic.jump({ count = 1, float = true }) end, opt("Next Diagnostic"))
+        keymap("n", "<leader>dp", function() vim.diagnostic.jump({ count = -1, float = true }) end,
             opt("Prev Diagnostic"))
-        keymap("n", "<Leader>dq", vim.diagnostic.setloclist, opt("Set LocList"))
-        keymap("n", "<Leader>dv", function()
+        keymap("n", "<leader>dq", vim.diagnostic.setloclist, opt("Set LocList"))
+        keymap("n", "<leader>dv", function()
             vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
         end, opt("Toggle diagnostic virtual_lines"))
         -- stylua: ignore end
@@ -258,5 +258,4 @@ end, {
 })
 -- }}}
 
--- vim: fdm=marker:fdl=0
 --- lsp.lua ends here

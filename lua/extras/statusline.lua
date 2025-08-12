@@ -107,14 +107,11 @@ local function get_mode()
   return string.format("%%#%s# %s", hl, modes[vim.api.nvim_get_mode().mode] or "UNKNOWN")
 end
 
--- Function to get the current working directory name
 ---@return string
 local function get_cwd()
-  return string.format(
-    " %%<%%#StatusLinePath# %s ",
-    ---@diagnostic disable-next-line: undefined-field
-    vim.fn.fnamemodify(vim.uv.cwd(), ":t")
-  )
+  local cwd = vim.uv.cwd() or ""
+  local name = vim.fn.fnamemodify(cwd, ":t")
+  return string.format(" %%<%%#StatusLinePath# %s ", name)
 end
 
 -- Function to get the current file path relative to CWD and modified status

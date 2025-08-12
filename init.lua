@@ -1,6 +1,6 @@
 vim.loader.enable()
 
-local colorscheme = "metal"
+local colorscheme = "rose-pine"
 
 require("core.lsp")
 require("config.options")
@@ -13,6 +13,3 @@ require("extras.statuscolumn")
 
 -- theme
 vim.cmd("colorscheme " .. colorscheme)
--- Transparency and colorcolumn
-vim.cmd("highlight Normal guibg=none")
-vim.cmd("highlight NonText guibg=none")
