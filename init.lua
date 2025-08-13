@@ -2,6 +2,7 @@ vim.loader.enable()
 
 local colorscheme = "rose-pine"
 
+
 require("core.lsp")
 require("config.options")
 require("config.keymaps")

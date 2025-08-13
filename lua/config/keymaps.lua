@@ -1,106 +1,110 @@
+-- `silent = true` is a crucial option for most mappings.
 local opts = { silent = true }
 
-local function opt(desc, others)
-  return vim.tbl_extend("force", opts, { desc = desc }, others or {})
+-- A simple helper to add a description to a mapping.
+-- This makes your mappings self-documenting in tools like `:help which-key`.
+local function with_desc(desc)
+    return vim.tbl_extend("force", opts, { desc = desc })
 end
 
---Remap space as leader key
-vim.keymap.set("", "<Space>", "<Nop>", { silent = true })
+-- Use a local variable to shorten the function name.
+local keymap = vim.keymap.set
+
+-- Leader Key and Core Mappings
+
+-- Set the space key as the leader key.
+-- This is a modern standard and keeps the leader key easy to reach.
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Shorten function name
-local keymap = vim.keymap.set
+-- Save, Quit, and Close
+keymap("n", "<Leader>w", "<Cmd>write<CR>", with_desc("Save File"))
+keymap("n", "<Leader>q", "<Cmd>quit<CR>", with_desc("Quit Window"))
+keymap("n", "<Leader>c", "<Cmd>bd<CR>", with_desc("Close Buffer"))
 
--- Modes
---   normal_mode = "n",
---   insert_mode = "i",
---   visual_mode = "v",
---   visual_block_mode = "x",
---   term_mode = "t",
---   command_mode = "c",
+-- Remove Search Highlights
+keymap("n", "\\", "<Cmd>noh<CR>", with_desc("Remove Search Highlights"))
 
-keymap("n", "<Leader>w", function()
-  vim.cmd("silent! write!")
-  vim.notify("File saved")
-end, opt("Save"))
-keymap("n", "<Leader>q", "<Cmd>q!<CR>", opt("Quit"))
-keymap("n", "<Leader>c", "<Cmd>bd!<CR>", opt("Close"))
+-- Navigate Quickfix List
+keymap("n", "<C-n>", "<Cmd>cnext<CR>", with_desc("Next Quickfix Item"))
+keymap("n", "<C-p>", "<Cmd>cprevious<CR>", with_desc("Previous Quickfix Item"))
 
-keymap("n", "\\", "<Cmd>noh<CR>", opt("Remove highlight"))
+-- Navigation and Movement
 
-keymap("n", "<C-n>", "<Cmd>silent cnext<CR>", opt("Next QF item"))
-keymap("n", "<C-p>", "<Cmd>silent cprevious<CR>", opt("Prev QF item"))
+-- Move lines up and down in normal and visual modes.
+keymap({ "n", "v" }, "<A-j>", ":m .+1<CR>==<Esc>", with_desc("Move line down"))
+keymap({ "n", "v" }, "<A-k>", ":m .-2<CR>==<Esc>", with_desc("Move line up"))
 
--- Move text up and down
-keymap("n", "<A-j>", "<Esc>:m .+1<CR>==gi", opts)
-keymap("n", "<A-k>", "<Esc>:m .-2<CR>==gi", opts)
+-- Visual Mode Mappings
 
--- Visual --
--- Stay in indent mode
+-- Indent selected text while staying in visual mode.
 keymap("v", "<", "<gv", opts)
 keymap("v", ">", ">gv", opts)
 
--- Move text up and down
-keymap("v", "<A-j>", ":m .+1<CR>==", opts)
-keymap("v", "<A-k>", ":m .-2<CR>==", opts)
-
--- pressing C-h,j,k,l will move the cursor in insert mode
-keymap("i", "<C-j>", "<Down>", opts)
-keymap("i", "<C-k>", "<Up>", opts)
-keymap("i", "<C-h>", "<Left>", opts)
-keymap("i", "<C-l>", "<Right>", opts)
+-- Don't yank text when pasting in visual mode.
 keymap("v", "p", "P", opts)
 
--- Visual Block --
--- Move text up and down
-keymap("x", "J", ":move '>+1<CR>gv=gv", opts)
-keymap("x", "K", ":move '<-2<CR>gv=gv", opts)
-keymap("x", "<A-j>", ":move '>+1<CR>gv=gv", opts)
-keymap("x", "<A-k>", ":move '<-2<CR>gv=gv", opts)
+-- Insert Mode Mappings
 
--- Buffer --
--- Better Buffer Navigation --
-keymap("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
-keymap("n", "<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
-keymap("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
-keymap("n", "<leader>bl", ":ls<CR>", { desc = "List buffers" })
+-- Move cursor with C-h,j,k,l while in insert mode.
+keymap("i", "<C-h>", "<Left>", opts)
+keymap("i", "<C-j>", "<Down>", opts)
+keymap("i", "<C-k>", "<Up>", opts)
+keymap("i", "<C-l>", "<Right>", opts)
 
--- Terminal --
--- Better terminal navigation
+-- Buffer Navigation
+
+-- Better buffer navigation with the leader key.
+keymap("n", "<leader>bn", ":bnext<CR>", with_desc("Next buffer"))
+keymap("n", "<leader>bp", ":bprevious<CR>", with_desc("Previous buffer"))
+keymap("n", "<leader>bd", ":bdelete<CR>", with_desc("Delete buffer"))
+keymap("n", "<leader>bl", ":ls<CR>", with_desc("List buffers"))
+
+-- Terminal Mappings
+
+-- Better terminal window navigation.
 keymap("t", "<C-h>", "<C-\\><C-N><C-w>h", opts)
 keymap("t", "<C-j>", "<C-\\><C-N><C-w>j", opts)
 keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", opts)
 
 -- stylua: ignore start
+-- These mappings depend on a custom `extras.terminal` module.
+-- They are kept here as-is, as they are specific to your setup.
 local term = require("extras.terminal")
 
-keymap("t", "<C-q>", [[<C-\><C-n>]], opt("Escape in terminal window"))
-keymap({ "n", "t" }, "<A-t>", function() term:new({ execn = "zsh", name = "Shell" }):toggle() end, opt("Open Shell"))
-keymap({ "n", "t" }, "<A-T>", function() term:new({ execn = "zsh", name = "Shell2" }):toggle() end, opt("Open Shell"))
-keymap({ "n", "t" }, "<A-g>", function() term:new({ execn = "lazygit",name = "Lazygit" }):toggle() end, opt("Open Lazygit"))
-keymap({ "n", "t" }, "<A-b>", function() term:new({ execn = "btop", name = "Btop" }):toggle() end, opt("Open Btop"))
-keymap({ "n", "t" }, "<A-p>", function() term:new({ execn = "python", name = "Python" }):toggle() end, opt("Open Python"))
-keymap("n", "<Leader>gg", function() term:new({ name = "Lazygit",execn = "lazygit" }):toggle() end, opt("Lazygit"))
--- stylua:ignore end
+keymap("t", "<C-q>", [[<C-\><C-n>]], with_desc("Escape in terminal window"))
+keymap({ "n", "t" }, "<A-t>", function() term:new({ execn = "zsh", name = "Shell" }):toggle() end,
+    with_desc("Open Shell"))
+keymap({ "n", "t" }, "<A-g>", function() term:new({ execn = "lazygit", name = "Lazygit" }):toggle() end,
+    with_desc("Open Lazygit"))
+keymap({ "n", "t" }, "<A-b>", function() term:new({ execn = "btop", name = "Btop" }):toggle() end, with_desc("Open Btop"))
+keymap({ "n", "t" }, "<A-p>", function() term:new({ execn = "python", name = "Python" }):toggle() end,
+    with_desc("Open Python"))
+keymap("n", "<Leader>gg", function() term:new({ name = "Lazygit", execn = "lazygit" }):toggle() end, with_desc("Lazygit"))
+-- stylua: ignore end
 
--- Quality of Life stuff --
-keymap({ "n", "s", "v" }, "<Leader>yy", '"+y', opt("Yank to clipboard"))
-keymap({ "n", "s", "v" }, "<Leader>yY", '"+yy', opt("Yank line to clipboard"))
-keymap({ "n", "s", "v" }, "<Leader>yp", '"+p', opt("Paste from clipboard"))
-keymap({ "n", "s", "v" }, "<Leader>yd", '"+d', opt("Delete into clipboard"))
+-- System clipboard mappings.
+keymap({ "n", "v" }, "<Leader>y", '"+y', with_desc("Yank to clipboard"))
+keymap("n", "<Leader>yy", '"+yy', with_desc("Yank line to clipboard"))
+keymap({ "n", "v" }, "<Leader>p", '"+p', with_desc("Paste from clipboard"))
+keymap({ "n", "v" }, "<Leader>d", '"+d', with_desc("Delete to clipboard"))
 
+-- Smart insert on empty lines.
+-- This is a clever custom mapping to start a new, properly indented line.
 keymap("n", "i", function()
-  if #vim.fn.getline(".") == 0 then
-    return [["_cc]]
-  else
-    return "i"
-  end
-end, { expr = true, desc = "properly indent on empty line when insert" })
+    if #vim.fn.getline(".") == 0 then
+        return [["_cc]]
+    else
+        return "i"
+    end
+end, { expr = true, silent = true, desc = "Properly indent on empty line when insert" })
 
+-- Source the current file to reload the configuration.
+keymap("n", "<Leader>x", "<Cmd>so %<CR>", with_desc("Source the current file"))
+
+-- Write file with sudo.
+-- This depends on a custom `extras.sudo-write` module.
 keymap("n", "<C-S-s>", function()
-  require("extras.sudo-write").write()
-end, opt("Write File with sudo"))
-
-keymap("n", "<Leader>x", "<Cmd>so %<CR>", opt("Source the current file"))
+    require("extras.sudo-write").write()
+end, with_desc("Write File with sudo"))

@@ -1,11 +1,22 @@
 return {
-    { "L3MON4D3/LuaSnip", keys = {} },
+    {
+        "L3MON4D3/LuaSnip",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
+            -- Optional: load custom snippets from your config path
+            require("luasnip.loaders.from_vscode").lazy_load({
+                paths = { vim.fn.stdpath("config") .. "/snippets" }
+            })
+        end,
+        opts = { history = true, delete_check_events = "TextChanged" },
+    },
     {
         "saghen/blink.cmp",
         dependencies = {
             "rafamadriz/friendly-snippets",
         },
-        -- event = "InsertEnter",
+        event = "InsertEnter",
         version = "*",
         config = function()
             require("blink.cmp").setup({
@@ -42,6 +53,9 @@ return {
                             enabled = true,
                         },
                     },
+                },
+                snippets = {
+                    preset = "luasnip", -- Specify the snippet engine preset
                 },
 
                 sources = {
