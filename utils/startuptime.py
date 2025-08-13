@@ -34,6 +34,7 @@ run(["nvim", "--startuptime", startup_log_file])
 print(f"With config: {time()}ms")
 run(["rm", startup_log_file])
 
+
 run(["nvim", "tmp.lua", "--startuptime", startup_log_file])
 print(f"Opening init.lua: {time()}ms")
 run(["rm", startup_log_file])

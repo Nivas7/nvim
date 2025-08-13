@@ -1,7 +1,5 @@
 vim.loader.enable()
 
-local colorscheme = "rose-pine"
-
 
 require("core.lsp")
 require("config.options")
@@ -10,7 +8,7 @@ require("config.autocmds")
 require("core.lazy")
 require("extras.statusline")
 require("extras.statuscolumn")
+require("extras.winbar")
 
 
--- theme
-vim.cmd("colorscheme " .. colorscheme)
+

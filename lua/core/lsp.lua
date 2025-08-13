@@ -1,3 +1,9 @@
+local diagnostic_icons  = {
+    ERROR = '',
+    WARN = '',
+    HINT = '',
+    INFO = '',
+}
 vim.lsp.enable({
     "lua-ls",
     "gopls",
@@ -10,6 +16,40 @@ vim.lsp.enable({
 -- ============================================================================
 -- LSP Configuration
 -- ============================================================================
+
+
+-- Override the virtual text diagnostic handler so that the most severe diagnostic is shown first.
+local show_handler = vim.diagnostic.handlers.virtual_text.show
+assert(show_handler)
+local hide_handler = vim.diagnostic.handlers.virtual_text.hide
+vim.diagnostic.handlers.virtual_text = {
+    show = function(ns, bufnr, diagnostics, opts)
+        table.sort(diagnostics, function(diag1, diag2)
+            return diag1.severity > diag2.severity
+        end)
+        return show_handler(ns, bufnr, diagnostics, opts)
+    end,
+    hide = hide_handler,
+}
+
+local hover = vim.lsp.buf.hover
+---@diagnostic disable-next-line: duplicate-set-field
+vim.lsp.buf.hover = function()
+    return hover {
+        max_height = math.floor(vim.o.lines * 0.5),
+        max_width = math.floor(vim.o.columns * 0.4),
+    }
+end
+
+local signature_help = vim.lsp.buf.signature_help
+---@diagnostic disable-next-line: duplicate-set-field
+vim.lsp.buf.signature_help = function()
+    return signature_help {
+        max_height = math.floor(vim.o.lines * 0.5),
+        max_width = math.floor(vim.o.columns * 0.4),
+    }
+end
+
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
@@ -38,28 +78,64 @@ local config = {
     },
     update_in_insert = true,
     underline = true,
-    virtual_text = true,
+    virtual_text = {
+        prefix = '',
+        spacing = 2,
+        format = function(diagnostic)
+            -- Use shorter, nicer names for some sources:
+            local special_sources = {
+                ['Lua Diagnostics.'] = 'lua',
+                ['Lua Syntax Check.'] = 'lua',
+            }
+
+            local message = diagnostic_icons[vim.diagnostic.severity[diagnostic.severity]]
+            if diagnostic.source then
+                message = string.format('%s %s', message, special_sources[diagnostic.source] or diagnostic.source)
+            end
+            if diagnostic.code then
+                message = string.format('%s[%s]', message, diagnostic.code)
+            end
+
+            return message .. ' '
+        end,
+    },
     severity_sort = true,
     float = {
-        focusable = false,
-        style = "minimal",
-        border = "single",
-        source = "always",
-        header = "",
-        prefix = "",
-        suffix = "",
+        source = 'if_many',
+        -- Show severity icons as prefixes.
+        prefix = function(diag)
+            local level = vim.diagnostic.severity[diag.severity]
+            local prefix = string.format(' %s ', diagnostic_icons[level])
+            return prefix, 'Diagnostic' .. level:gsub('^%l', string.upper)
+        end,
     },
 }
 vim.diagnostic.config(config)
 
--- Improve LSP UI with icons 
+-- Improve LSP UI with icons
 local icons = {
-    Class = " ", Color = " ", Constant = " ", Constructor = " ",
-    Enum = " ", EnumMember = " ", Event = " ", Field = " ",
-    File = " ", Folder = " ", Function = "󰊕 ", Interface = " ",
-    Keyword = " ", Method = "ƒ ", Module = "󰏗 ", Property = " ",
-    Snippet = " ", Struct = " ", Text = " ", Unit = " ",
-    Value = " ", Variable = " ",
+    Class = " ",
+    Color = " ",
+    Constant = " ",
+    Constructor = " ",
+    Enum = " ",
+    EnumMember = " ",
+    Event = " ",
+    Field = " ",
+    File = " ",
+    Folder = " ",
+    Function = "󰊕 ",
+    Interface = " ",
+    Keyword = " ",
+    Method = "ƒ ",
+    Module = "󰏗 ",
+    Property = " ",
+    Snippet = " ",
+    Struct = " ",
+    Text = " ",
+    Unit = " ",
+    Value = " ",
+    Variable = " ",
 }
 
 local completion_kinds = vim.lsp.protocol.CompletionItemKind
@@ -70,6 +146,8 @@ end
 -- Set the global LSP configuration with the merged capabilities
 vim.lsp.config("*", {
     capabilities = capabilities,
+    ---@param client vim.lsp.Client
+    ---@param bufnr integer
     on_attach = function(client, bufnr)
         local ok, diag = pcall(require, "extras.workspace-diagnostic")
         if ok then
@@ -122,39 +200,36 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
         -- Lsp Actions
         keymap("n", "gd", function() lsp.buf.definition() end, opt("Go to definition"))
-        keymap("n", "gD", function()
-          local ok, diag = pcall(require, "extras.definition")
-          if ok then
-            diag.get_def()
-          end
-        end, opt("Get the definition in a float"))
         keymap("n", "gi", function() lsp.buf.implementation({ border = "single" }) end, opt("Go to implementation"))
         keymap("n", "gr", lsp.buf.references, opt("Show References"))
-        keymap("n", "K", function() lsp.buf.hover({ border = "rounded", max_height = 30, max_width = 120 }) end, opt("Toggle hover"))
+        keymap("n", "K", function() lsp.buf.hover({ border = "rounded", max_height = 30, max_width = 120 }) end,
+            opt("Toggle hover"))
         keymap("n", "<leader>lr", lsp.buf.rename, opt("Rename"))
         keymap("n", "<leader>la", lsp.buf.code_action, opt("Code Action"))
         keymap("n", "<leader>ls", lsp.buf.document_symbol, opt("Doument Symbols"))
         keymap("n", "<leader>lS", lsp.buf.workspace_symbol, opt("Workspace Symbols"))
         keymap("n", "<leader>lf", function() lsp.buf.format() end, opt("Toggle AutoFormat"))
-        keymap("n", "<leader>lh", function() lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled({})) end, opt("Toggle Inlayhints"))
+        keymap("n", "<leader>lh", function() lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled({})) end,
+            opt("Toggle Inlayhints"))
         keymap("n", "<leader>ll", lsp.codelens.run, opt("Run CodeLens"))
 
         -- Diagnostic actions
         keymap("n", "gl", vim.diagnostic.open_float, opt("Open diagnostic in float"))
         keymap("n", "<leader>dn", function() vim.diagnostic.jump({ count = 1, float = true }) end, opt("Next Diagnostic"))
-        keymap("n", "<leader>dp", function() vim.diagnostic.jump({ count = -1, float = true }) end, opt("Prev Diagnostic"))
+        keymap("n", "<leader>dp", function() vim.diagnostic.jump({ count = -1, float = true }) end,
+            opt("Prev Diagnostic"))
         keymap("n", "<leader>dq", vim.diagnostic.setloclist, opt("Set LocList"))
         keymap("n", "<leader>dv", function()
-          vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
+            vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
         end, opt("Toggle diagnostic virtual_lines"))
         keymap("n", "<Leader>dD", function()
-          local ok, diag = pcall(require, "rj.extras.workspace-diagnostic")
-          if ok then
-            for _, cur_client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-              diag.populate_workspace_diagnostics(cur_client, 0)
+            local ok, diag = pcall(require, "rj.extras.workspace-diagnostic")
+            if ok then
+                for _, cur_client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+                    diag.populate_workspace_diagnostics(cur_client, 0)
+                end
+                vim.notify("INFO: Diagnostic populated")
             end
-            vim.notify("INFO: Diagnostic populated")
-          end
         end, opt("Popluate diagnostic for the whole workspace"))
     end,
 })
@@ -204,4 +279,3 @@ vim.api.nvim_create_user_command("LspInfo", function()
 end, {
     desc = "Get all the information about all LSP attached",
 })
-
