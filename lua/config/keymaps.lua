@@ -18,9 +18,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- Save, Quit, and Close
-keymap("n", "<Leader>w", "<Cmd>write<CR>", with_desc("Save File"))
-keymap("n", "<Leader>q", "<Cmd>quit<CR>", with_desc("Quit Window"))
-keymap("n", "<Leader>c", "<Cmd>bd<CR>", with_desc("Close Buffer"))
+keymap("n", "<leader>w", "<Cmd>write<CR>", with_desc("Save File"))
+keymap("n", "<leader>q", "<Cmd>quit<CR>", with_desc("Quit Window"))
+keymap("n", "<leader>c", "<Cmd>bd<CR>", with_desc("Close Buffer"))
 
 -- Remove Search Highlights
 keymap("n", "\\", "<Cmd>noh<CR>", with_desc("Remove Search Highlights"))

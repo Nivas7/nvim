@@ -75,9 +75,6 @@ vim.g.netrw_banner = 0
 vim.g.netrw_winsize = 25
 vim.g.c_syntax_for_h = true
 
--- ============================================================================
--- Autocommands
--- ============================================================================
 
 -- A single autogroup for all your custom autocommands
 local autocmd = vim.api.nvim_create_autocmd

@@ -1,4 +1,4 @@
-local diagnostic_icons  = {
+local diagnostic_icons = {
     ERROR = '',
     WARN = '',
     HINT = '',
@@ -78,27 +78,7 @@ local config = {
     },
     update_in_insert = true,
     underline = true,
-    virtual_text = {
-        prefix = '',
-        spacing = 2,
-        format = function(diagnostic)
-            -- Use shorter, nicer names for some sources:
-            local special_sources = {
-                ['Lua Diagnostics.'] = 'lua',
-                ['Lua Syntax Check.'] = 'lua',
-            }
-
-            local message = diagnostic_icons[vim.diagnostic.severity[diagnostic.severity]]
-            if diagnostic.source then
-                message = string.format('%s %s', message, special_sources[diagnostic.source] or diagnostic.source)
-            end
-            if diagnostic.code then
-                message = string.format('%s[%s]', message, diagnostic.code)
-            end
-
-            return message .. ' '
-        end,
-    },
+    virtual_text = true,
     severity_sort = true,
     float = {
         source = 'if_many',
