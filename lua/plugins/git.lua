@@ -1,175 +1,166 @@
+local octo_desc = Utils.plugin_keymap_desc("octo")
+
 return {
+    { "tpope/vim-fugitive", cmd = "Git" },
+
+    {
+        "FabijanZulj/blame.nvim",
+        cmd = "BlameToggle",
+        opts = {
+            mappings = {
+                commit_info = "K",
+            },
+        },
+    },
+
+    {
+        "kdheepak/lazygit.nvim",
+        cmd = { "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter", "LazyGitFilterCurrentFile" },
+        dependencies = { "nvim-lua/plenary.nvim" },
+        keys = {
+            { "<leader>gg", "<cmd>LazyGit<CR>", desc = "LazyGit: Open" },
+        },
+    },
+
     {
         "lewis6991/gitsigns.nvim",
-        lazy = false,
-        config = function()
-            -- local icons = require('config.icons')
-            require("gitsigns").setup({
+        event = "VeryLazy",
+        opts = function()
+            return {
                 signs = {
-                    add = { text = "┃" },
-                    change = { text = "┃" },
-                    delete = { text = "_" },
-                    topdelete = { text = "‾" },
-                    changedelete = { text = "~" },
-                    untracked = { text = "┆" },
+                    add = { text = "󰜄" },
+                    change = { text = "󱗝" },
+                    delete = { text = "󰛲" },
+                    topdelete = { text = "󰛲" },
+                    changedelete = { text = "󱗝" },
+                    untracked = { text = "󰜄" },
                 },
-                signs_staged = {
-                    add = { text = "┃" },
-                    change = { text = "┃" },
-                    delete = { text = "_" },
-                    topdelete = { text = "‾" },
-                    changedelete = { text = "~" },
-                    untracked = { text = "┆" },
-                },
-                signcolumn = true,
-                numhl = false,
-                linehl = false,
-                word_diff = false,
-                watch_gitdir = {
-                    interval = 1000,
-                    follow_files = true,
-                },
-                attach_to_untracked = true,
-                current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
-                current_line_blame_opts = {
-                    virt_text = true,
-                    virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-                    delay = 1000,
-                    ignore_whitespace = false,
-                },
-                current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
-                sign_priority = 6,
-                status_formatter = nil,
-                update_debounce = 200,
-                max_file_length = 40000,
+                current_line_blame = true,
+                current_line_blame_opts = { delay = 500 },
                 preview_config = {
-                    border = "rounded",
-                    style = "minimal",
-                    relative = "cursor",
-                    row = 0,
-                    col = 1,
+                    border = "single",
+                    title = "Preview changes",
+                    title_pos = "center",
                 },
-                -- yadm = { enable = false },
-
                 on_attach = function(bufnr)
-                    vim.keymap.set(
-                        "n",
-                        "<leader>H",
-                        require("gitsigns").preview_hunk,
-                        { buffer = bufnr, desc = "Preview git hunk" }
-                    )
+                    local gs = package.loaded.gitsigns
 
-                    vim.keymap.set("n", "]]", require("gitsigns").next_hunk, { buffer = bufnr, desc = "Next git hunk" })
+                    local function map(mode, l, r, opts)
+                        opts = opts or {}
+                        opts.buffer = bufnr
+                        vim.keymap.set(mode, l, r, opts)
+                    end
 
-                    vim.keymap.set(
-                        "n",
-                        "[[",
-                        require("gitsigns").prev_hunk,
-                        { buffer = bufnr, desc = "Previous git hunk" }
-                    )
+                    -- Navigation
+                    map("n", "]c", function()
+                        if vim.wo.diff then
+                            return "]c"
+                        end
+                        vim.schedule(function()
+                            gs.next_hunk()
+                            vim.cmd("normal! zz")
+                        end)
+                        return "<Ignore>"
+                    end, { expr = true, desc = "Next hunk" })
+
+                    map("n", "[c", function()
+                        if vim.wo.diff then
+                            return "[c"
+                        end
+                        vim.schedule(function()
+                            gs.prev_hunk()
+                            vim.cmd("normal! zz")
+                        end)
+                        return "<Ignore>"
+                    end, { expr = true, desc = "Previous hunk" })
+
+                    -- Actions
+                    map("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
+                    map("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
+                    map("v", "<leader>gs", function()
+                        gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+                    end, { desc = "Stage hunk" })
+                    map("v", "<leader>gr", function()
+                        gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+                    end, { desc = "Reset hunk" })
+                    -- map('n', '<leader>hS', gs.stage_buffer, {desc = desc('Stage buffer')})
+                    -- map('n', '<leader>hR', gs.reset_buffer, {desc = desc('Reset buffer')})
+                    map("n", "<leader>gp", gs.preview_hunk, { desc = "Preview hunk" })
+                    map("n", "<leader>gb", function()
+                        gs.blame_line({ full = true })
+                    end, { desc = "Blame line" })
+                    -- map('n', '<leader>tb', gs.toggle_current_line_blame, {desc = desc('Toggle current line blame')})
+                    -- map('n', '<leader>hd', gs.diffthis, {desc = desc('Diff this')})
+                    -- map('n', '<leader>hD', function() gs.diffthis('~') end, {desc = desc('Diff this')})
+
+                    -- Text object
+                    map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
                 end,
-            })
+            }
         end,
-        keys = {
-            {
-                "<leader>Gk",
-                function()
-                    require("gitsigns").prev_hunk({ navigation_message = false })
-                end,
-                desc = "Prev Hunk",
-            },
-            {
-                "<leader>Gl",
-                function()
-                    require("gitsigns").blame_line()
-                end,
-                desc = "Blame",
-            },
-            {
-                "<leader>Gp",
-                function()
-                    require("gitsigns").preview_hunk()
-                end,
-                desc = "Preview Hunk",
-            },
-            {
-                "<leader>Gr",
-                function()
-                    require("gitsigns").reset_hunk()
-                end,
-                desc = "Reset Hunk",
-            },
-            {
-                "<leader>GR",
-                function()
-                    require("gitsigns").reset_buffer()
-                end,
-                desc = "Reset Buffer",
-            },
-            {
-                "<leader>Gj",
-                function()
-                    require("gitsigns").next_hunk({ navigation_message = false })
-                end,
-                desc = "Next Hunk",
-            },
-            {
-                "<leader>Gs",
-                function()
-                    require("gitsigns").stage_hunk()
-                end,
-                desc = "Stage Hunk",
-            },
-            {
-                "<leader>Gu",
-                function()
-                    require("gitsigns").undo_stage_hunk()
-                end,
-                desc = "Undo Stage Hunk",
-            },
-            -- {
-            --   "<leader>Go", require("telescope.builtin").git_status,
-            --   desc = "Open changed file"
-            -- },
-            -- {
-            --   "<leader>Gb", require("telescope.builtin").git_branches,
-            --   desc = "Checkout branch"
-            -- },
-            -- {
-            --   "<leader>Gc", require("telescope.builtin").git_commits,
-            --   desc = "Checkout commit"
-            -- },
-            -- {
-            --   "<leader>GC", require("telescope.builtin").git_bcommits,
-            --   desc = "Checkout commit(for current file)"
-            -- },
-            {
-                "<leader>Gd",
-                function()
-                    vim.cmd("Gitsigns diffthis HEAD")
-                end,
-                desc = "Git Diff HEAD",
+    },
+
+    {
+        "pwntester/octo.nvim",
+        cmd = "Octo",
+        event = { { event = "BufReadCmd", pattern = "octo://*" } },
+        opts = {
+            enable_builtin = true,
+            default_to_projects_v2 = true,
+            default_merge_method = "squash",
+            picker = "fzf-lua",
+            picker_config = {
+                use_emojis = true,
             },
         },
+        keys = {
+            { "<leader>oi",      "<cmd>Octo issue list<CR>",   desc = "List Issues" },
+            { "<leader>oI",      "<cmd>Octo issue search<CR>", desc = "Search Issues" },
+            { "<leader>op",      "<cmd>Octo pr list<CR>",      desc = "List PRs" },
+            { "<leader>oP",      "<cmd>Octo pr search<CR>",    desc = "Search PRs" },
+            { "<leader>or",      "<cmd>Octo repo list<CR>",    desc = "List Repos" },
+            { "<leader>oS",      "<cmd>Octo search<CR>",       desc = "Search" },
+
+            { "<localleader>a",  "",                           desc = "+assignee",     ft = "octo" },
+            { "<localleader>c",  "",                           desc = "+comment/code", ft = "octo" },
+            { "<localleader>l",  "",                           desc = "+label",        ft = "octo" },
+            { "<localleader>i",  "",                           desc = "+issue",        ft = "octo" },
+            { "<localleader>r",  "",                           desc = "+react",        ft = "octo" },
+            { "<localleader>p",  "",                           desc = "+pr",           ft = "octo" },
+            { "<localleader>pr", "",                           desc = "+rebase",       ft = "octo" },
+            { "<localleader>ps", "",                           desc = "+squash",       ft = "octo" },
+            { "<localleader>v",  "",                           desc = "+review",       ft = "octo" },
+            { "<localleader>g",  "",                           desc = "+goto_issue",   ft = "octo" },
+            { "@",               "@<C-x><C-o>",                mode = "i",             ft = "octo", silent = true },
+            { "#",               "#<C-x><C-o>",                mode = "i",             ft = "octo", silent = true },
+        },
     },
+
     {
         "sindrets/diffview.nvim",
-        event = "VeryLazy",
-        cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
-    },
-    -- Git related plugins
-    "tpope/vim-fugitive",
-    "tpope/vim-rhubarb",
-
-    -- not git, but it's okay
-    {
-        "mbbill/undotree",
-        keys = {
-            {
-                "<leader>GU",
-                ":UndotreeToggle<CR>",
-                desc = "Toggle UndoTree",
-            },
-        },
+        cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+        opts = function()
+            local diffview_config = require("diffview.config")
+            return {
+                keymaps = {
+                    file_panel = {
+                        ["<c-f>"] = false,
+                        ["<c-b>"] = false,
+                        {
+                            "n",
+                            "<c-b>",
+                            diffview_config.actions.scroll_view(0.25),
+                            { desc = "Diffview: Scroll the view down" },
+                        },
+                        {
+                            "n",
+                            "<c-g>",
+                            diffview_config.actions.scroll_view(-0.25),
+                            { desc = "Diffview: Scroll the view up" },
+                        },
+                    },
+                },
+            }
+        end,
     },
 }

@@ -1,14 +1,12 @@
 vim.loader.enable()
 
 
-require("core.lsp")
-require("config.options")
-require("config.keymaps")
-require("config.autocmds")
+_G.Utils = require("extras")
+
+require("config")
 require("core.lazy")
-require("extras.statusline")
+require("core.lsp")
 require("extras.statuscolumn")
 require("extras.winbar")
 
-
-
+vim.cmd("colorscheme rose-pine")

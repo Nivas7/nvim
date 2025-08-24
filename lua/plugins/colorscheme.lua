@@ -1,57 +1,64 @@
 return {
     {
-        "vague2k/vague.nvim",
-        lazy = false,    -- make sure we load this during startup if it is your main colorscheme
-        priority = 1000, -- make sure to load this before all the other plugins
-        config = function()
-            require("vague").setup({
-            })
-            -- vim.cmd("colorscheme vague")
-        end
+        "folke/tokyonight.nvim",
+        lazy = true,
+        opts = {
+            style = "night",
+            on_highlights = function(hl, colors)
+                local is_dark = vim.o.background == "dark"
+                if is_dark then
+                    hl.Normal = { bg = "#000000" }
+                    hl.FoldColumn = { bg = "none" }
+                    hl.SignColumn = { bg = "none" }
+                    hl.Cursor = { bg = "#ffffff" }
+                    hl.StatusLine = { bg = "none" }
+                end
+            end,
+        }
     },
     {
         "rose-pine/neovim",
-        lazy = false,
+        name = "rose-pine",
         priority = 1000,
-        config = function()
-            local bg = "#000000"
-
-            local config = require("rose-pine.config")
-            local group_error = config.options.groups["error"]
-
-            require("rose-pine").setup({
-                disable_background = true,
-                transparent = false,
-                styles = {
-                    bold = true,
-                    italic = false,
-                    transparency = false,
+        opts = {
+            dark_variant = "moon",
+            styles = { italic = false },
+            palette = {
+                dawn = {
+                    no_bg = "#faf4ed",
+                    cursor_bg = "#998f97",
+                    cursor_fg = "#575279",
                 },
-                highlight_groups = {
-                    Cursor = { bg = "none" },
-                    Normal = { bg = bg },
-                    NormalNC = { bg = bg },
-                    NormalFloat = { bg = "none" },
-                    FloatBorder = { bg = "none" },
-                    FloatTitle = { bg = "none" },
-                    Pmenu = { bg = "none" },
-                    DapUIFloatBorder = { bg = "none" },
-                    BlinkCmpMenu = { link = "NormalFloat" },
-                    BlinkCmpMenuBorder = { link = "FloatBorder" },
-                    BlinkCmpMenuSelection = { link = "CursorLine" },
-                    TroubleNormal = { link = "Normal" },
-                    TroubleNormalNC = { link = "NormalNC" },
-                    FzfLuaBorder = { bg = "none" },
-                    WhichKeyBorder = { link = "FloatBorder" },
-                    DapStoppedLine = { link = "DiagnosticVirtualTextError" },
-                    HydraPink = { fg = group_error },
-                    StatusLineNC = { bg = bg },
+                moon = {
+                    gold = "#f6d5a7",
+                    foam = "#a1d1da",
+                    iris = "#d9c7ef",
+                    rose = "#ebbcba",
+                    pine = "#437e91",
+                    no_bg = "#000000",
+                    cursor_bg = "#ffffff",
+                    cursor_fg = "#000000",
                 },
-            })
-            vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-            vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-        end,
-
+            },
+            highlight_groups = {
+                Normal = { bg = "no_bg" },
+                Cursor = { bg = "cursor_bg", fg = "cursor_fg" },
+                Directory = { fg = "foam", bold = false },
+                StatusLine = { bg = "none", fg = "clear" },
+                StatusLineTerm = { bg = "base", fg = "subtle" },
+                StatusLineNC = { bg = "no_bg", fg = "subtle" },
+                --- gitsigns
+                StatusLineGitSignsAdd = { bg = "none", fg = "pine" },
+                StatusLineGitSignsChange = { bg = "none", fg = "gold" },
+                StatusLineGitSignsDelete = { bg = "none", fg = "rose" },
+                --- diagnostics
+                StatusLineDiagnosticSignError = { bg = "none", fg = "love" },
+                StatusLineDiagnosticSignWarn = { bg = "none", fg = "gold" },
+                StatusLineDiagnosticSignInfo = { bg = "none", fg = "foam" },
+                StatusLineDiagnosticSignHint = { bg = "none", fg = "iris" },
+                StatusLineDiagnosticSignOk = { bg = "none", fg = "pine" },
+            },
+        }
     },
     {
         "catppuccin/nvim",
@@ -495,7 +502,6 @@ return {
                     end,
                 },
             })
-            vim.cmd("colorscheme  catppuccin");
         end,
     },
 }

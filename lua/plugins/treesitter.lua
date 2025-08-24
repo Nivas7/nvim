@@ -1,80 +1,66 @@
 return {
-    { -- Highlight, edit, and navigate code
-        "nvim-treesitter/nvim-treesitter",
-        build = ":TSUpdate",
-        main = "nvim-treesitter.configs", -- Sets main module to use for opts
-        -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-        opts = {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "master",
+    dependencies = {
+        { "windwp/nvim-ts-autotag",                  opts = {} },
+        { "nvim-treesitter/nvim-treesitter-context", opts = { enable = false } },
+    },
+    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+    build = ":TSUpdate",
+    lazy = vim.fn.argc(-1) == 0,
+    config = function()
+        local configs = require("nvim-treesitter.configs")
+        local parsers = require("nvim-treesitter.parsers")
+
+        configs.setup({
             ensure_installed = {
                 "bash",
-                "c",
+                "css",
                 "diff",
+                "dockerfile",
+                "go",
+                "gomod",
+                "gowork",
+                "graphql",
                 "html",
+                "javascript",
+                "jsdoc",
+                "json",
+                "json5",
                 "lua",
-                "luadoc",
                 "markdown",
                 "markdown_inline",
-                "query",
+                "php",
+                "prisma",
+                "python",
+                "regex",
+                "rust",
+                "scss",
+                "sql",
+                "tsx",
+                "typescript",
                 "vim",
                 "vimdoc",
+                "yaml",
             },
-            -- Autoinstall languages that are not installed
-            auto_install = true,
-            highlight = {
+            highlight = { enable = true },
+            indent = { enable = true },
+            context_commentstring = {
                 enable = true,
+                enable_autocmd = false,
             },
-            playground = {
+            incremental_selection = {
                 enable = true,
-                disable = {},
-            },
-            textobjects = {
-                select = {
-                    enable = true,
-                    -- Automatically jump forward to textobj, similar to targets.vim
-                    lookahead = true,
-                    keymaps = {
-                        ["af"] = { query = "@function.outer", desc = "Select outer part of a function region" },
-                        ["if"] = { query = "@function.inner", desc = "Select inner part of a function region" },
-                        ["ac"] = { query = "@class.outer", desc = "Select outer part of a class region" },
-                        ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-                    },
-                },
-                swap = {
-                    enable = true,
-                    swap_next = {
-                        ["<leader>xp"] = { query = "@parameter.inner", desc = "Swap parameter with the next one" },
-                    },
-                    swap_previous = {
-                        ["<leader>xP"] = { query = "@parameter.inner", desc = "Swap parameter with the previous one" },
-                    },
+                keymaps = {
+                    init_selection = "<leader>ti",
+                    scope_incremental = "<leader>ts",
+                    node_incremental = "v",
+                    node_decremental = "V",
                 },
             },
-            indent = { enable = true, disable = { "ruby" } },
-        },
-    },
+        })
 
-    -- NOTE: js,ts,jsx,tsx Auto Close Tags
-    {
-        "windwp/nvim-ts-autotag",
-        enabled = true,
-        ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" },
-        config = function()
-            -- Independent nvim-ts-autotag setup
-            require("nvim-ts-autotag").setup({
-                opts = {
-                    enable_close = true, -- Auto-close tags
-                    enable_rename = true, -- Auto-rename pairs
-                    enable_close_on_slash = false, -- Disable auto-close on trailing `</`
-                },
-                per_filetype = {
-                    ["html"] = {
-                        enable_close = true, -- Disable auto-closing for HTML
-                    },
-                    ["typescriptreact"] = {
-                        enable_close = true, -- Explicitly enable auto-closing (optional, defaults to `true`)
-                    },
-                },
-            })
-        end,
-    },
+        local parser_configs = parsers.get_parser_configs()
+        parser_configs.tsx.filetype_to_parsername = { "javascript", "typescript.tsx" }
+    end,
 }

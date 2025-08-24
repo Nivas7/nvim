@@ -1,52 +1,32 @@
--- NOTE: File explorer like vim-vinegar
 return {
     "stevearc/oil.nvim",
-    init = function()
-        vim.keymap.set("n", "<leader>e", function()
-            vim.cmd "Oil"
-        end, { desc = "Oil | Toggle Oil" })
-    end,
-    cmd = "Oil",
+    dependencies = {
+        { "nvim-treesitter/nvim-treesitter" },
+        { "nvim-tree/nvim-web-devicons",    lazy = true },
+    },
+    ---@module 'oil'
+    ---@type oil.SetupOpts
     opts = {
-        -- Send deleted files to the trash instead of permanently deleting them (:help oil-trash)
-        delete_to_trash = false,
+        delete_to_trash = true,
+        skip_confirm_for_simple_edits = true,
         view_options = {
-            -- Show files and directories that start with "."
             show_hidden = true,
-        },
-        -- Configuration for the floating window in oil.open_float
-        float = {
-            -- Padding around the floating window
-            padding = 2,
-            max_height = math.ceil(vim.o.lines * 0.8 - 4),
-            max_width = math.ceil(vim.o.columns * 0.4),
-            border = "rounded",
-            win_options = {
-                winblend = 0,
-            },
-            -- This is the config that will be passed to nvim_open_win.
-            -- Change values here to customize the layout
-            override = function(conf)
-                return conf
+            is_always_hidden = function(name, _)
+                return vim.startswith(name, ".DS_Store")
             end,
         },
         keymaps = {
-            ["g?"] = "actions.show_help",
-            ["<CR>"] = "actions.select",
-            ["<C-s>"] = "actions.select_vsplit",
-            ["<C-h>"] = "actions.select_split",
-            ["<C-t>"] = "actions.select_tab",
-            ["<C-p>"] = "actions.preview",
-            ["<C-c>"] = "actions.close",
-            ["<C-l>"] = "actions.refresh",
-            ["-"] = "actions.parent",
-            ["_"] = "actions.open_cwd",
-            ["`"] = "actions.cd",
-            ["~"] = "actions.tcd",
-            ["gs"] = "actions.change_sort",
-            ["gx"] = "actions.open_external",
-            ["g."] = "actions.toggle_hidden",
-            ["g\\"] = "actions.toggle_trash",
+            ["<C-h>"] = false, -- Split
+            ["<C-l>"] = false, -- refresh
+            ["<leader>os"] = "actions.select_split",
+            ["<leader>ov"] = "actions.select_vsplit",
+            ["<C-g>"] = "actions.refresh",
         },
+        float = { padding = 4 },
     },
+    config = function(_, opts)
+        local oil = require("oil")
+        oil.setup(opts)
+        vim.keymap.set("n", "-", oil.open, { desc = "Open parent directory" })
+    end,
 }

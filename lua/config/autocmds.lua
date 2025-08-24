@@ -4,6 +4,34 @@ local autocmd = vim.api.nvim_create_autocmd
 -- This is a best practice to prevent duplicates if the config is sourced multiple times.
 local augroup = vim.api.nvim_create_augroup("MyOptimalConfig", { clear = true })
 
+
+-- Statusline
+local statusline_group = vim.api.nvim_create_augroup("StatusLine", {})
+autocmd({ "WinEnter", "BufEnter" }, {
+    pattern = "*",
+    group = statusline_group,
+    callback = function()
+        if vim.bo.filetype == "oil" then
+            vim.wo.statusline = "%{%v:lua.require('extras.statusline').oil()%}"
+            return
+        end
+        vim.wo.statusline = "%{%v:lua.require('extras.statusline').active()%}"
+    end,
+})
+
+autocmd({ "WinLeave", "BufLeave" }, {
+    pattern = "*",
+    group = statusline_group,
+    callback = function(args)
+        local leaving_buf_filetype = vim.api.nvim_get_option_value("filetype", { buf = args.buf })
+        if leaving_buf_filetype == "oil" then
+            vim.wo.statusline = "%{%v:lua.require('extras.statusline').oil()%}"
+            return
+        end
+        vim.wo.statusline = "%{%v:lua.require('extras.statusline').inactive()%}"
+    end,
+})
+
 -- ============================================================================
 -- Core Editing Autocommands
 -- ============================================================================
@@ -14,6 +42,7 @@ autocmd("BufEnter", {
     group = augroup,
     command = "set formatoptions-=cro"
 })
+
 
 -- Go to the last edit position when opening a file.
 -- This is a highly useful feature for resuming work exactly where you left off.

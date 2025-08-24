@@ -1,104 +1,88 @@
 return {
-    {
-        "L3MON4D3/LuaSnip",
-        dependencies = { "rafamadriz/friendly-snippets" },
-        config = function()
-            require("luasnip.loaders.from_vscode").lazy_load()
-            -- Optional: load custom snippets from your config path
-            require("luasnip.loaders.from_vscode").lazy_load({
-                paths = { vim.fn.stdpath("config") .. "/snippets" }
-            })
-        end,
-        opts = { history = true, delete_check_events = "TextChanged" },
-    },
-    {
-        "saghen/blink.cmp",
-        dependencies = {
-            "rafamadriz/friendly-snippets",
+    "saghen/blink.cmp",
+    version = "1.*",
+    event = "InsertEnter",
+    enabled = vim.g.blink_enabled,
+    ---@module 'blink.cmp'
+    opts = {
+        keymap = {
+            preset = "enter",
+            ["<C-y>"] = { "show", "show_documentation", "hide_documentation" },
+            ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+            ["<C-d>"] = { "scroll_documentation_down", "fallback" },
         },
-        event = "InsertEnter",
-        version = "*",
-        config = function()
-            require("blink.cmp").setup({
-                keymap = {
-                    preset = "default",
+        cmdline = {
+            enabled = true,
+            completion = {
+                menu = { auto_show = true },
+                list = {
+                    selection = { preselect = false },
                 },
-
-                appearance = {
-                    use_nvim_cmp_as_default = true,
-                    nerd_font_variant = "normal",
+            },
+            keymap = {
+                preset = "enter",
+                ["<C-y>"] = { "show_and_insert" },
+                ["<CR>"] = { "accept_and_enter", "fallback" },
+                ["<Tab>"] = { "select_next", "fallback" },
+                ["<S-Tab>"] = { "select_prev", "fallback" },
+            },
+        },
+        sources = {
+            default = { "lsp", "path", "snippets", "buffer", "lazydev" },
+            providers = {
+                lazydev = {
+                    name = "LazyDev",
+                    module = "lazydev.integrations.blink",
+                    score_offset = 100, -- show at a higher priority than lsp
                 },
-
-                completion = {
-                    list = {
-                        selection = {
-                            preselect = function(ctx)
-                                return ctx.mode ~= "cmdline"
-                                    and not require("blink.cmp").snippet_active({ direction = 1 })
-                            end,
-                            auto_insert = function(ctx)
-                                return ctx.mode == "cmdline"
-                            end,
-                        },
-                    },
-                    trigger = {
-                        prefetch_on_insert = true,
-                    },
-                    documentation = {
-                        auto_show = true,
-                        auto_show_delay_ms = 150,
-                    },
-                    accept = {
-                        auto_brackets = {
-                            enabled = true,
-                        },
-                    },
+                lsp = {
+                    fallbacks = { "buffer", "path" },
                 },
                 snippets = {
-                    preset = "luasnip", -- Specify the snippet engine preset
-                },
-
-                sources = {
-                    default = { "lsp", "path", "snippets", "buffer" },
-                },
-                cmdline = {
-                    enabled = true,
-                    completion = {
-                        menu = {
-                            auto_show = false,
-                        },
+                    name = "Snippets",
+                    module = "blink.cmp.sources.snippets",
+                    min_keyword_length = 3,
+                    opts = {
+                        friendly_snippets = false,
+                        search_paths = { vim.fn.stdpath("config") .. "/snippets" },
                     },
-                    keymap = {
-                        preset = "default",
-                        ["<Tab>"] = {
-                            function(cmp)
-                                if not cmp.is_menu_visible() then
-                                    cmp.show_and_insert()
-                                end
-                                return cmp.select_next()
-                            end,
-                        },
-                        ["<S-Tab>"] = {
-                            function(cmp)
-                                if not cmp.is_menu_visible() then
-                                    cmp.show_and_insert()
-                                end
-                                return cmp.select_prev()
-                            end,
-                        },
-                    },
-                    sources = function()
-                        local type = vim.fn.getcmdtype()
-                        if type == ":" then
-                            return { "cmdline" }
-                        end
-                        return {}
-                    end,
                 },
-                signature = { enabled = false },
-            })
-
-            vim.lsp.config('*', { capabilities = require('blink.cmp').get_lsp_capabilities(nil, true) })
-        end,
+            },
+        },
+        completion = {
+            accept = {
+                auto_brackets = {
+                    enabled = false,
+                },
+            },
+            trigger = {
+                show_on_accept_on_trigger_character = false,
+            },
+            list = {
+                selection = {
+                    preselect = false,
+                    auto_insert = false,
+                },
+            },
+            menu = {
+                draw = {
+                    treesitter = { "lsp" },
+                    columns = {
+                        { "label",     gap = 2 },
+                        { "kind_icon", gap = 1, "kind" },
+                    },
+                },
+            },
+            documentation = {
+                auto_show = true,
+                auto_show_delay_ms = 200,
+                window = {
+                    border = "none",
+                    max_width = math.floor(vim.o.columns * 0.4),
+                    max_height = math.floor(vim.o.lines * 0.5),
+                },
+            },
+        },
     },
+    opts_extend = { "sources.default" },
 }

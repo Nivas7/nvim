@@ -1,109 +1,83 @@
-return {
-  "stevearc/conform.nvim",
-  config = function()
-    local conform = require("conform")
-
-    conform.setup({
-      formatters_by_ft = {
-        -- general
-        ["*"] = { "injected" },
-        ["_"] = { "trim_whitespace" },
-
-        -- prettier filetypes
-        javascript = { "prettier" },
-        typescript = { "prettier" },
-        javascriptreact = { "prettier" },
-        json = { "prettier" },
-        jsonc = { "prettier" },
-
-        typescriptreact = { "prettier" },
-        svelte = { "prettier" },
-        css = { "prettier" },
-        html = { "prettier" },
-        yaml = { "prettier" },
-        markdown = { "prettier" },
-        graphql = { "prettier" },
-        vue = { "prettier" },
-
-        lua = { "stylua" },
-
-        java = { "astyle" },
-        sh = { "shfmt" },
-        bash = { "shfmt" },
-        go = { "gofmt", "goimports" },
-      },
-
-      format_on_save = function(bufnr)
-        local function myCallback(err)
-          if err then
-            vim.notify("Error during formatting: ", err)
-          else
-            vim.notify("Formatting completed successfully.")
-          end
-        end
-        -- Disable with a global or buffer-local variable
-        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-          return
-        end
-        -- Disable autoformat for files in a certain path
-        local bufname = vim.api.nvim_buf_get_name(bufnr)
-        if bufname:match("/node_modules/") then
-          return
-        end
-        return { timeout_ms = 1000, lsp_fallback = true }, myCallback()
-      end,
-
-      formatters = {
-        pyfix_imports = {
-          command = "pyfix-imports",
-          args = { "$FILENAME" },
-          stdin = true,
-          cwd = require("conform.util").root_file({
-            "requirements.txt",
-            "pyproject.toml",
-            ".git",
-          }),
-        },
-      },
-    })
-
-    vim.g.disable_autoformat = true
-
-    vim.api.nvim_create_user_command("Format", function()
-      local function myCallback(err)
-        if err then
-          vim.notify("Error during formatting: ", string(err))
-        else
-          vim.notify("Formatting completed successfully.")
-        end
-      end
-      conform.format({
-        lsp_fallback = true,
-        async = false,
-        timeout_ms = 1000,
-      }, myCallback())
-    end, {
-      desc = "Format the current file",
-    })
-
-    vim.api.nvim_create_user_command("FormatToggle", function()
-      if vim.b.disable_autoformat or vim.g.disable_autoformat then
-        vim.b.disable_autoformat = false
-        vim.g.disable_autoformat = false
-        vim.notify("AutoFormat Enabled")
-      else
+vim.api.nvim_create_user_command("ConformDisable", function(args)
+    if args.bang then
+        -- FormatDisable! will disable formatting just for this buffer
         vim.b.disable_autoformat = true
+    else
         vim.g.disable_autoformat = true
-        vim.notify("AutoFormat Disabled")
-      end
-    end, {
-      desc = "Toggle autoformat-on-save",
-    })
+    end
+end, { desc = "Disable conform-autoformat-on-save", bang = true })
 
-    vim.keymap.set("n", "<Leader>lf", "<Cmd>silent Format<CR>", {
-      desc = "Format the current file",
-      silent = true,
-    })
-  end,
+vim.api.nvim_create_user_command("ConformEnable", function()
+    vim.b.disable_autoformat = false
+    vim.g.disable_autoformat = false
+end, { desc = "Re-enable conform-autoformat-on-save" })
+
+return {
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    ---@module "conform"
+    ---@type conform.setupOpts
+    opts = {
+        quiet = true,
+        formatters_by_ft = {
+            typescript = { "prettier" },
+            typescriptreact = { "prettier" },
+            javascript = { "prettier" },
+            javascriptreact = { "prettier" },
+            html = { "prettier" },
+            css = { "prettier" },
+            scss = { "prettier" },
+            lua = { "stylua", lsp_format = "prefer" },
+            markdown = { "prettier" },
+            yaml = { "prettier" },
+            graphql = { "prettier" },
+            vue = { "prettier" },
+            angular = { "prettier" },
+            less = { "prettier" },
+            flow = { "prettier" },
+            sh = { "beautysh" },
+            bash = { "beautysh" },
+            zsh = { "beautysh" },
+            http = { "kulala-fmt" },
+            python = { "black" },
+            go = { "gofmt" },
+            ["_"] = { "trim_whitespace" },
+        },
+        format_on_save = function(bufnr)
+            -- Disable autoformat for files in a certain path
+            local bufname = vim.api.nvim_buf_get_name(bufnr)
+            if bufname:match("/node_modules/") then
+                return
+            end
+
+            if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+                return
+            end
+
+            ---@type conform.FormatOpts
+            return { timeout_ms = 500, lsp_format = Utils.lsp.get_lsp_format(bufnr) }
+        end,
+        log_level = vim.log.levels.DEBUG,
+        formatters = {
+            prettier = {
+                prepend_args = function()
+                    return {
+                        "--no-semi",
+                        "--single-quote",
+                        "--no-bracket-spacing",
+                        "--print-width",
+                        "80",
+                        "--config-precedence",
+                        "prefer-file",
+                    }
+                end,
+            },
+            beautysh = {
+                prepend_args = function()
+                    return { "--indent-size", "4", "--force-function-style", "fnpar" }
+                end,
+            },
+        },
+    },
 }
-
